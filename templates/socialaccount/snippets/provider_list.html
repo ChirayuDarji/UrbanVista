@@ -1,0 +1,10 @@
+{% load socialaccount %}
+<div class="form-actions" style="gap:10px; flex-wrap:wrap">
+  {% for provider in socialaccount_providers %}
+    <a class="btn btn-google"
+       href="{% provider_login_url provider.id process=process scope=scope auth_params=auth_params %}">
+      <span class="g" aria-hidden="true"></span>
+      Continue with {{ provider.name }}
+    </a>
+  {% endfor %}
+</div>

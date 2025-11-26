@@ -1,0 +1,1225 @@
+/* =========================================================
+   UrbanVista • Home Page Improvements
+   All 15 improvements implemented
+   ========================================================= */
+
+/* ========================================
+   1. HERO SECTION IMPROVEMENTS
+   ======================================== */
+
+/* Scroll Indicator */
+.scroll-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-top: 32px;
+  color: var(--uv-c-text-muted);
+  font-size: 14px;
+  animation: bounce-arrow 2s ease-in-out infinite;
+}
+.scroll-arrow {
+  width: 24px;
+  height: 24px;
+  color: var(--uv-c-link);
+}
+@keyframes bounce-arrow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(8px); }
+}
+
+/* Hero Stats Counter Animation */
+.hero-stats .stat-counter {
+  display: inline-block;
+  transition: all 0.3s ease;
+}
+
+/* Video Controls */
+.video-controls {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  display: flex;
+  gap: 8px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.device-frame:hover .video-controls {
+  opacity: 1;
+}
+.video-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.video-btn:hover {
+  background: rgba(0, 0, 0, 0.9);
+}
+
+/* Floating CTA */
+.floating-cta {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9998;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px);
+  transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
+}
+.floating-cta.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.floating-cta .btn {
+  position: relative;
+  overflow: visible;
+  box-shadow: 0 8px 24px rgba(0, 212, 255, 0.3);
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 8px 24px rgba(0, 212, 255, 0.3); }
+  50% { box-shadow: 0 8px 32px rgba(0, 212, 255, 0.5); }
+}
+
+/* ========================================
+   2. FEATURES SECTION ENHANCEMENTS
+   ======================================== */
+
+.feature-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  color: var(--uv-c-link);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  opacity: 0;
+  transform: translateX(-8px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.feature-card:hover .feature-link {
+  opacity: 1;
+  transform: translateX(0);
+}
+.feature-preview {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  padding: 12px;
+  background: var(--uv-c-surface-1);
+  border: 1px solid var(--uv-c-border);
+  border-radius: 8px;
+  margin-top: 8px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
+  font-size: 13px;
+  color: var(--uv-c-text-muted);
+  z-index: 10;
+}
+.feature-card:hover .feature-preview {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.feature-card {
+  position: relative;
+}
+
+/* ========================================
+   3. HOW IT WORKS IMPROVEMENTS
+   ======================================== */
+
+.steps-wrapper {
+  position: relative;
+}
+.steps-connector {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, 
+    var(--uv-c-link) 0%, 
+    var(--uv-c-accent) 50%, 
+    var(--uv-c-link) 100%);
+  opacity: 0.3;
+  z-index: 0;
+  transform: translateY(-50%);
+}
+@media (max-width: 980px) {
+  .steps-connector {
+    display: none;
+  }
+}
+.step-demo-btn {
+  margin-top: 12px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: transparent;
+  border: 1px solid var(--uv-c-link);
+  color: var(--uv-c-link);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.3s ease;
+}
+.step-demo-btn:hover {
+  background: var(--uv-c-link);
+  color: #0b1018;
+  transform: translateY(-2px);
+}
+
+/* ========================================
+   4. SOLUTIONS TABS ENHANCEMENTS
+   ======================================== */
+
+.tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.tab-btn i {
+  font-size: 16px;
+}
+.tab-btn::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 3px;
+  background: var(--uv-c-link);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+.tab-btn.active::after {
+  width: 80%;
+}
+
+/* ========================================
+   5. STATS SECTION ANIMATIONS
+   ======================================== */
+
+.stat-progress {
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  margin: 12px 0 8px;
+  overflow: hidden;
+}
+.stat-progress-bar {
+  height: 100%;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  width: 0;
+  transition: width 1.5s ease-out;
+}
+.stat-item.reveal.is-visible .stat-progress-bar[data-progress] {
+  width: var(--progress-width, 0%);
+}
+.stat-change {
+  display: block;
+  font-size: 12px;
+  opacity: 0.8;
+  margin-top: 4px;
+}
+
+/* ========================================
+   6. MAP SECTION IMPROVEMENTS
+   ======================================== */
+
+.map-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: grid;
+  place-items: center;
+  background: var(--uv-c-surface-2);
+  border-radius: 16px;
+}
+.map-loading-spinner {
+  text-align: center;
+  color: var(--uv-c-text-muted);
+}
+.map-loading-spinner p {
+  margin-top: 12px;
+  font-size: 14px;
+}
+.map-legend {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  background: rgba(20, 25, 35, 0.95);
+  border: 1px solid var(--uv-c-border);
+  border-radius: 12px;
+  padding: 12px;
+  z-index: 5;
+  backdrop-filter: blur(10px);
+}
+.map-legend h4 {
+  margin: 0 0 8px;
+  font-size: 14px;
+  color: var(--uv-c-text);
+}
+.legend-items {
+  display: grid;
+  gap: 6px;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--uv-c-text-muted);
+}
+.legend-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+.map-filters {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  display: flex;
+  gap: 8px;
+  z-index: 5;
+}
+.map-filter-btn {
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: rgba(20, 25, 35, 0.95);
+  border: 1px solid var(--uv-c-border);
+  color: var(--uv-c-text);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
+}
+.map-filter-btn:hover,
+.map-filter-btn.active {
+  background: var(--uv-c-link);
+  color: #0b1018;
+  border-color: var(--uv-c-link);
+}
+.map-update-indicator {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: rgba(20, 25, 35, 0.95);
+  border: 1px solid var(--uv-c-border);
+  border-radius: 8px;
+  font-size: 12px;
+  color: var(--uv-c-text-muted);
+  z-index: 5;
+  backdrop-filter: blur(10px);
+}
+.update-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.2); }
+}
+
+/* ========================================
+   7. TESTIMONIALS CAROUSEL
+   ======================================== */
+
+.testimonials-carousel-wrapper {
+  position: relative;
+}
+.testimonials-slider {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  overflow: hidden;
+}
+@media (max-width: 980px) {
+  .testimonials-slider {
+    grid-template-columns: 1fr;
+    display: flex;
+    transition: transform 0.5s cubic-bezier(.22,.61,.36,1);
+  }
+  .testimonial-item {
+    min-width: 100%;
+    flex-shrink: 0;
+  }
+}
+.testimonial-item {
+  opacity: 0.6;
+  transform: scale(0.95);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.testimonial-item.active {
+  opacity: 1;
+  transform: scale(1);
+}
+.testimonial-rating {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+  margin-bottom: 12px;
+  color: #fbbf24;
+  font-size: 14px;
+}
+.carousel-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 24px;
+}
+.carousel-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--uv-c-surface-1);
+  border: 1px solid var(--uv-c-border);
+  color: var(--uv-c-text);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.carousel-btn:hover {
+  background: var(--uv-c-link);
+  color: #0b1018;
+  border-color: var(--uv-c-link);
+  transform: scale(1.1);
+}
+.carousel-dots {
+  display: flex;
+  gap: 8px;
+}
+.carousel-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--uv-c-border);
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 0;
+}
+.carousel-dot.active {
+  background: var(--uv-c-link);
+  transform: scale(1.3);
+}
+
+/* ========================================
+   8. CTA SECTION ENHANCEMENTS
+   ======================================== */
+
+.cta-urgency {
+  margin-bottom: 16px;
+}
+.urgency-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  font-size: 13px;
+  font-weight: 600;
+  animation: pulse-badge 2s ease-in-out infinite;
+}
+@keyframes pulse-badge {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+.cta-social-proof {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+.social-proof-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+.social-proof-item i {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* ========================================
+   9. CONTACT FORM IMPROVEMENTS
+   ======================================== */
+
+.form-field-wrapper {
+  position: relative;
+}
+.form-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--uv-c-text-muted);
+  z-index: 1;
+  pointer-events: none;
+}
+.contact-form input,
+.contact-form select,
+.contact-form textarea {
+  padding-left: 42px !important;
+}
+.contact-form textarea {
+  padding-top: 12px;
+}
+.field-error {
+  display: block;
+  color: var(--error, #ef4444);
+  font-size: 12px;
+  margin-top: 4px;
+  min-height: 16px;
+}
+.contact-form input:invalid:not(:placeholder-shown),
+.contact-form select:invalid:not(:placeholder-shown),
+.contact-form textarea:invalid:not(:placeholder-shown) {
+  border-color: var(--error, #ef4444);
+}
+.contact-form input:valid:not(:placeholder-shown),
+.contact-form select:valid:not(:placeholder-shown),
+.contact-form textarea:valid:not(:placeholder-shown) {
+  border-color: var(--success, #22c55e);
+}
+.textarea-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 4px;
+}
+.char-counter {
+  font-size: 12px;
+  color: var(--uv-c-text-muted);
+}
+#contact-submit.btn-success-state {
+  background: var(--success, #22c55e);
+  border-color: var(--success, #22c55e);
+}
+#contact-submit .btn-success {
+  display: none;
+}
+#contact-submit.success .btn-text {
+  display: none;
+}
+#contact-submit.success .btn-success {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Success Animation */
+@keyframes success-checkmark {
+  0% { transform: scale(0); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+#contact-submit.success i {
+  animation: success-checkmark 0.5s ease;
+}
+
+/* ========================================
+   10. GENERAL IMPROVEMENTS
+   ======================================== */
+
+/* Scroll Progress Bar */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: transparent;
+  z-index: 10001;
+  pointer-events: none;
+}
+.scroll-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--uv-c-link), var(--uv-c-accent));
+  width: 0%;
+  transition: width 0.1s ease-out;
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+}
+
+/* Section Navigation Dots */
+.section-nav-dots {
+  position: fixed;
+  right: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 9997;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+.section-nav-dots.show {
+  opacity: 1;
+  visibility: visible;
+}
+@media (max-width: 768px) {
+  .section-nav-dots {
+    display: none;
+  }
+}
+.nav-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--uv-c-border);
+  border: 2px solid transparent;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s ease;
+  display: block;
+  text-decoration: none;
+}
+.nav-dot:hover,
+.nav-dot.active {
+  background: var(--uv-c-link);
+  border-color: var(--uv-c-link);
+  transform: scale(1.3);
+}
+.dot-tooltip {
+  position: absolute;
+  right: calc(100% + 12px);
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 6px 10px;
+  background: var(--uv-c-surface-1);
+  border: 1px solid var(--uv-c-border);
+  border-radius: 6px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+  pointer-events: none;
+}
+.nav-dot:hover .dot-tooltip {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Smooth Scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Section Dividers */
+.section-divider {
+  height: 1px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    var(--uv-c-border) 20%, 
+    var(--uv-c-border) 80%, 
+    transparent 100%);
+  margin: 0;
+  opacity: 0.5;
+}
+
+/* ========================================
+   11. VISUAL ENHANCEMENTS
+   ======================================== */
+
+/* Gradient Overlays */
+.hero-alt::before {
+  z-index: 0;
+}
+.features-section,
+.how-it-works-section,
+.contributions-section,
+.solutions-section,
+.map-section,
+.testimonials-section,
+.contact-section {
+  position: relative;
+}
+.features-section::before,
+.how-it-works-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 200px;
+  background: linear-gradient(180deg, 
+    color-mix(in srgb, var(--uv-c-link) 8%, transparent) 0%, 
+    transparent 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Micro-interactions */
+.btn {
+  position: relative;
+  overflow: hidden;
+}
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s ease, height 0.6s ease;
+}
+.btn:active::before {
+  width: 300px;
+  height: 300px;
+}
+
+/* ========================================
+   12. INTERACTIVE ELEMENTS
+   ======================================== */
+
+/* Hero Search Bar */
+.hero-search {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: rgba(20, 25, 35, 0.98);
+  backdrop-filter: blur(20px);
+  z-index: 10002;
+  padding: 16px;
+  transform: translateY(-100%);
+  transition: transform 0.3s ease;
+  border-bottom: 1px solid var(--uv-c-border);
+}
+.hero-search.show {
+  transform: translateY(0);
+}
+.search-wrapper {
+  max-width: 800px;
+  margin: 0 auto;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.search-icon {
+  position: absolute;
+  left: 16px;
+  color: var(--uv-c-text-muted);
+  z-index: 1;
+}
+#global-search {
+  width: 100%;
+  padding: 12px 48px 12px 44px;
+  background: var(--uv-c-surface-1);
+  border: 1px solid var(--uv-c-border);
+  border-radius: 12px;
+  color: var(--uv-c-text);
+  font-size: 16px;
+}
+.search-close {
+  position: absolute;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  color: var(--uv-c-text-muted);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+.search-results {
+  max-width: 800px;
+  margin: 12px auto 0;
+  background: var(--uv-c-surface-1);
+  border: 1px solid var(--uv-c-border);
+  border-radius: 12px;
+  padding: 12px;
+  max-height: 400px;
+  overflow-y: auto;
+  display: none;
+}
+.search-results.show {
+  display: block;
+}
+
+/* Live Chat Widget */
+.live-chat-widget {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  z-index: 9996;
+}
+.chat-toggle {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--uv-c-link), var(--uv-c-accent));
+  border: none;
+  color: #0b1018;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(0, 212, 255, 0.3);
+  position: relative;
+  transition: transform 0.3s ease;
+  overflow: visible;
+}
+.chat-toggle:hover {
+  transform: scale(1.1);
+}
+.chat-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--error, #ef4444);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+  transform: translate(25%, -25%);
+  border: 2px solid var(--uv-c-surface-1);
+  box-sizing: border-box;
+}
+.chat-window {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  left: 0;
+  width: 320px;
+  height: 400px;
+  background: var(--uv-c-surface-1);
+  border: 1px solid var(--uv-c-border);
+  border-radius: 16px;
+  box-shadow: var(--uv-shadow-lg);
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+}
+.chat-window.show {
+  display: flex;
+}
+.chat-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--uv-c-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.chat-header h4 {
+  margin: 0;
+  font-size: 16px;
+}
+.chat-close {
+  background: none;
+  border: none;
+  color: var(--uv-c-text-muted);
+  cursor: pointer;
+  padding: 4px;
+}
+.chat-messages {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.chat-message {
+  padding: 10px 12px;
+  border-radius: 12px;
+  max-width: 80%;
+}
+.chat-message.bot {
+  background: var(--uv-c-surface-2);
+  align-self: flex-start;
+}
+.chat-message.user {
+  background: var(--uv-c-link);
+  color: #0b1018;
+  align-self: flex-end;
+}
+.chat-input-wrapper {
+  padding: 12px;
+  border-top: 1px solid var(--uv-c-border);
+  display: flex;
+  gap: 8px;
+}
+#chat-input {
+  flex: 1;
+  padding: 8px 12px;
+  background: var(--uv-c-surface-2);
+  border: 1px solid var(--uv-c-border);
+  border-radius: 8px;
+  color: var(--uv-c-text);
+}
+.chat-send {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: var(--uv-c-link);
+  border: none;
+  color: #0b1018;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+
+/* Notification Bell */
+.notification-bell {
+  position: fixed;
+  bottom: 100px;
+  right: 24px;
+  z-index: 9996;
+}
+.bell-toggle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--uv-c-surface-1);
+  border: 1px solid var(--uv-c-border);
+  color: var(--uv-c-text);
+  font-size: 20px;
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.3s ease;
+  overflow: visible;
+}
+.bell-toggle:hover {
+  transform: scale(1.1);
+}
+.notification-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--error, #ef4444);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+  transform: translate(25%, -25%);
+  border: 2px solid var(--uv-c-surface-1);
+  box-sizing: border-box;
+}
+.notification-panel {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  right: 0;
+  width: 320px;
+  max-height: 400px;
+  background: var(--uv-c-surface-1);
+  border: 1px solid var(--uv-c-border);
+  border-radius: 16px;
+  box-shadow: var(--uv-shadow-lg);
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+}
+.notification-panel.show {
+  display: flex;
+}
+.notification-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--uv-c-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.notification-header h4 {
+  margin: 0;
+  font-size: 16px;
+}
+.notification-close {
+  background: none;
+  border: none;
+  color: var(--uv-c-text-muted);
+  cursor: pointer;
+}
+.notification-list {
+  overflow-y: auto;
+  padding: 8px;
+}
+.notification-item {
+  padding: 12px;
+  border-radius: 8px;
+  display: flex;
+  gap: 12px;
+  margin-bottom: 8px;
+  background: var(--uv-c-surface-2);
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.notification-item:hover {
+  background: color-mix(in srgb, var(--uv-c-link) 10%, transparent);
+}
+.notification-item.unread {
+  border-left: 3px solid var(--uv-c-link);
+}
+.notification-item i {
+  color: var(--uv-c-link);
+  margin-top: 2px;
+}
+.notification-item strong {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+.notification-item p {
+  font-size: 13px;
+  color: var(--uv-c-text-muted);
+  margin: 0 0 4px;
+}
+.notification-time {
+  font-size: 11px;
+  color: var(--uv-c-text-muted);
+}
+
+/* Social Proof Banner - Removed */
+
+/* ========================================
+   13. MOBILE-SPECIFIC IMPROVEMENTS
+   ======================================== */
+
+/* Bottom Navigation (Mobile) */
+.mobile-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--uv-c-surface-1);
+  border-top: 1px solid var(--uv-c-border);
+  padding: 8px;
+  display: none;
+  z-index: 9994;
+}
+@media (max-width: 768px) {
+  .mobile-bottom-nav {
+    display: flex;
+    justify-content: space-around;
+  }
+}
+.mobile-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px;
+  color: var(--uv-c-text-muted);
+  text-decoration: none;
+  font-size: 11px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  flex: 1;
+  max-width: 80px;
+}
+.mobile-nav-item.active {
+  color: var(--uv-c-link);
+  background: color-mix(in srgb, var(--uv-c-link) 10%, transparent);
+}
+.mobile-nav-item i {
+  font-size: 20px;
+}
+
+/* Swipe Gestures for Testimonials */
+@media (max-width: 980px) {
+  .testimonials-slider {
+    touch-action: pan-y;
+  }
+}
+
+/* Touch-friendly targets */
+@media (max-width: 768px) {
+  .btn,
+  .map-btn,
+  .carousel-btn {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  
+  /* Adjust floating elements for mobile to prevent overlap */
+  .floating-cta {
+    bottom: 80px;
+    right: 16px;
+  }
+  
+  .notification-bell {
+    bottom: 140px;
+    right: 16px;
+  }
+  
+  .live-chat-widget {
+    bottom: 80px;
+    left: 16px;
+  }
+}
+
+/* Search Results */
+.search-result-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.search-result-item:hover {
+  background: var(--uv-c-surface-2);
+}
+.search-result-item i {
+  font-size: 20px;
+}
+.search-result-item strong {
+  display: block;
+  color: var(--uv-c-text);
+  margin-bottom: 4px;
+}
+.search-result-item span {
+  font-size: 12px;
+  color: var(--uv-c-text-muted);
+}
+
+/* Mobile Bottom Nav Styles */
+.mobile-bottom-nav {
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Section Dividers Enhancement */
+.section-divider {
+  margin: 0;
+  padding: 0;
+}
+
+/* Feature Card Link Hover */
+.feature-card {
+  overflow: visible;
+}
+
+/* Step Demo Button */
+.step-content {
+  position: relative;
+}
+
+/* Tab Button Span */
+.tab-btn span {
+  position: relative;
+  z-index: 1;
+}
+
+/* Progress Bar Animation Fix */
+.stat-item.reveal.is-visible .stat-progress-bar[data-progress] {
+  animation: progress-fill 1.5s ease-out forwards;
+}
+@keyframes progress-fill {
+  from { width: 0; }
+  to { width: var(--progress-width, 0%); }
+}
+
+/* Map Loading Spinner */
+.map-loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Testimonials Mobile View */
+@media (max-width: 980px) {
+  .testimonials-carousel-wrapper {
+    overflow: hidden;
+  }
+}
+
+/* Contact Form Success State */
+#contact-submit.success {
+  animation: success-pulse 0.6s ease;
+}
+@keyframes success-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* Form Field Valid State */
+.contact-form input.is-valid,
+.contact-form select.is-valid,
+.contact-form textarea.is-valid {
+  border-color: var(--success, #22c55e);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='%2322c55e' d='M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.75.75 0 0 1 1.06-1.06L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 40px;
+}
+
+/* ========================================
+   PERFORMANCE & ACCESSIBILITY
+   ======================================== */
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .scroll-indicator,
+  .floating-cta,
+  .video-controls,
+  .feature-preview,
+  .stat-progress-bar,
+  .update-dot,
+  .urgency-badge,
+  .chat-toggle,
+  .bell-toggle {
+    animation: none !important;
+  }
+}
+
+/* Focus states */
+.nav-dot:focus-visible,
+.carousel-btn:focus-visible,
+.map-btn:focus-visible,
+.video-btn:focus-visible {
+  outline: 2px solid var(--uv-c-link);
+  outline-offset: 2px;
+}
+

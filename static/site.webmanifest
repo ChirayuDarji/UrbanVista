@@ -1,0 +1,17 @@
+{
+  "name": "UrbanVista",
+  "short_name": "UrbanVista",
+  "description": "Smart Geolocation Platform for Ahmedabad",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0b1020",
+  "theme_color": "#0ea5e9",
+  "icons": [
+    {
+      "src": "/static/img/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
+

@@ -1,0 +1,273 @@
+/* ==========================================================================
+   UrbanVista • Animation Pack (drop-in)
+   - Timing + easing vars (inherits from base if present)
+   - Generic enter/exit animations (fade, slide, scale, pop, blur, rotate, flip)
+   - Stagger helpers
+   - Hover micro-interactions (lift, glow, underline)
+   - Component animations (navbar, mobile menu, dropdown, modal, toast)
+   - Skeleton shimmer, spinners, ripples
+   - Reveal-on-scroll hooks
+   - Reduced motion support
+   ========================================================================== */
+
+/* 0) Timing + easing (fallbacks if base vars not defined) */
+:root {
+  --a-fast: var(--fast, 120ms);
+  --a-normal: var(--normal, 200ms);
+  --a-slow: var(--slow, 360ms);
+
+  --ease-smooth: cubic-bezier(.22,.61,.36,1);
+  --ease-emph: cubic-bezier(.2,0,0,1);
+  --ease-bounce: cubic-bezier(.34,1.56,.64,1);
+  --ease-spring: cubic-bezier(.16,1,.3,1);
+}
+
+/* 1) Generic enter/exit */
+/* Fade */
+.fade-in { animation: uv-fade-in var(--a-normal) var(--ease-smooth) both; }
+.fade-out { animation: uv-fade-out var(--a-normal) var(--ease-emph) forwards; }
+@keyframes uv-fade-in   { from { opacity: 0 } to { opacity: 1 } }
+@keyframes uv-fade-out  { to   { opacity: 0 } }
+
+/* Slide */
+.slide-up    { animation: uv-slide-up var(--a-normal) var(--ease-smooth) both; }
+.slide-down  { animation: uv-slide-down var(--a-normal) var(--ease-smooth) both; }
+.slide-left  { animation: uv-slide-left var(--a-normal) var(--ease-smooth) both; }
+.slide-right { animation: uv-slide-right var(--a-normal) var(--ease-smooth) both; }
+@keyframes uv-slide-up    { from { transform: translateY(12px); opacity: 0 } to { transform: translateY(0); opacity: 1 } }
+@keyframes uv-slide-down  { from { transform: translateY(-12px); opacity: 0 } to { transform: translateY(0); opacity: 1 } }
+@keyframes uv-slide-left  { from { transform: translateX(12px); opacity: 0 } to { transform: translateX(0); opacity: 1 } }
+@keyframes uv-slide-right { from { transform: translateX(-12px); opacity: 0 } to { transform: translateX(0); opacity: 1 } }
+
+/* Scale/Pop */
+.scale-in { animation: uv-scale-in var(--a-normal) var(--ease-spring) both; transform-origin: center; }
+.scale-out { animation: uv-scale-out var(--a-normal) var(--ease-emph) forwards; transform-origin: center; }
+@keyframes uv-scale-in  { from { transform: scale(.96); opacity: 0 } to { transform: scale(1); opacity: 1 } }
+@keyframes uv-scale-out { to   { transform: scale(.98); opacity: 0 } }
+
+.pop-in  { animation: uv-pop-in var(--a-normal) var(--ease-bounce) both; }
+.pop-out { animation: uv-pop-out var(--a-normal) var(--ease-emph) forwards; }
+@keyframes uv-pop-in  { from { transform: translateY(6px) scale(.98); opacity: 0 } to { transform: translateY(0) scale(1); opacity: 1 } }
+@keyframes uv-pop-out { to   { transform: translateY(-6px) scale(.98); opacity: 0 } }
+
+/* Blur */
+.blur-in  { animation: uv-blur-in var(--a-normal) var(--ease-smooth) both; }
+.blur-out { animation: uv-blur-out var(--a-normal) var(--ease-emph) forwards; }
+@keyframes uv-blur-in  { from { filter: blur(8px); opacity: 0 } to { filter: blur(0); opacity: 1 } }
+@keyframes uv-blur-out { to   { filter: blur(8px); opacity: 0 } }
+
+/* Rotate + Flip */
+.rotate-in { animation: uv-rotate-in var(--a-normal) var(--ease-smooth) both; transform-origin: center; }
+.rotate-out { animation: uv-rotate-out var(--a-normal) var(--ease-emph) forwards; transform-origin: center; }
+@keyframes uv-rotate-in { from { transform: rotate(-6deg); opacity: 0 } to { transform: rotate(0); opacity: 1 } }
+@keyframes uv-rotate-out { to { transform: rotate(6deg); opacity: 0 } }
+
+.flip-x-in { animation: uv-flip-x-in var(--a-normal) var(--ease-smooth) both; transform-style: preserve-3d; }
+.flip-x-out { animation: uv-flip-x-out var(--a-normal) var(--ease-emph) forwards; transform-style: preserve-3d; }
+@keyframes uv-flip-x-in { from { transform: rotateX(-8deg); opacity: 0 } to { transform: rotateX(0); opacity: 1 } }
+@keyframes uv-flip-x-out { to { transform: rotateX(8deg); opacity: 0 } }
+
+.flip-y-in { animation: uv-flip-y-in var(--a-normal) var(--ease-smooth) both; transform-style: preserve-3d; }
+.flip-y-out { animation: uv-flip-y-out var(--a-normal) var(--ease-emph) forwards; transform-style: preserve-3d; }
+@keyframes uv-flip-y-in { from { transform: rotateY(-8deg); opacity: 0 } to { transform: rotateY(0); opacity: 1 } }
+@keyframes uv-flip-y-out { to { transform: rotateY(8deg); opacity: 0 } }
+
+/* 2) Stagger helpers */
+.stagger > * { --stagger-step: 80ms; animation-delay: calc(var(--i, 0) * var(--stagger-step)); }
+.stagger-quick > * { --stagger-step: 50ms; }
+.stagger-slow  > * { --stagger-step: 120ms; }
+/* index mapping up to 12 children */
+.stagger > *:nth-child(1) { --i: 0; }
+.stagger > *:nth-child(2) { --i: 1; }
+.stagger > *:nth-child(3) { --i: 2; }
+.stagger > *:nth-child(4) { --i: 3; }
+.stagger > *:nth-child(5) { --i: 4; }
+.stagger > *:nth-child(6) { --i: 5; }
+.stagger > *:nth-child(7) { --i: 6; }
+.stagger > *:nth-child(8) { --i: 7; }
+.stagger > *:nth-child(9) { --i: 8; }
+.stagger > *:nth-child(10) { --i: 9; }
+.stagger > *:nth-child(11) { --i: 10; }
+.stagger > *:nth-child(12) { --i: 11; }
+
+/* 3) Hover micro-interactions */
+.hover-lift {
+  transition: transform var(--a-fast), box-shadow var(--a-normal), border-color var(--a-normal);
+  will-change: transform, box-shadow;
+}
+.hover-lift:hover { transform: translateY(-4px); box-shadow: var(--shadow, 0 10px 30px rgba(0,0,0,.35)); }
+
+.hover-glow {
+  transition: box-shadow var(--a-normal), transform var(--a-fast);
+}
+.hover-glow:hover {
+  box-shadow: 0 0 0 6px color-mix(in oklab, var(--primary) 18%, transparent);
+  transform: translateY(-2px);
+}
+
+/* Link underline slide */
+.link-underline { position: relative; }
+.link-underline::after {
+  content: ""; position: absolute; left: 0; bottom: -2px; height: 2px; width: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  transform: scaleX(0); transform-origin: left;
+  transition: transform var(--a-normal) var(--ease-emph);
+}
+.link-underline:hover::after { transform: scaleX(1); }
+
+/* 4) Navbar transitions */
+.navbar {
+  transition: background-color var(--a-normal), box-shadow var(--a-normal), border-color var(--a-normal), backdrop-filter var(--a-normal);
+}
+
+/* 5) Mobile menu (attach classes from JS on open/close) */
+.mobile-menu.animate-in { animation: uv-menu-down var(--a-normal) var(--ease-smooth) both; }
+.mobile-menu.animate-out { animation: uv-menu-up var(--a-normal) var(--ease-emph) forwards; }
+@keyframes uv-menu-down { from { transform: translateY(-8px); opacity: 0 } to { transform: translateY(0); opacity: 1 } }
+@keyframes uv-menu-up   { to   { transform: translateY(-8px); opacity: 0 } }
+
+/* 6) Dropdown / menu surface */
+.menu-surface {
+  transform-origin: top right;
+  animation: uv-menu-surface-in var(--a-normal) var(--ease-spring) both;
+}
+@keyframes uv-menu-surface-in { from { transform: translateY(6px) scale(.98); opacity: 0 } to { transform: translateY(0) scale(1); opacity: 1 } }
+
+/* 7) Modal */
+.modal-backdrop {
+  background: var(--overlay, rgba(8,10,14,.6));
+  animation: uv-fade-in var(--a-normal) var(--ease-smooth) both;
+}
+.modal {
+  transform-origin: center;
+  animation: uv-scale-in var(--a-normal) var(--ease-spring) both;
+}
+.modal.closing .modal-backdrop { animation: uv-fade-out var(--a-normal) var(--ease-emph) forwards; }
+.modal.closing .modal { animation: uv-scale-out var(--a-normal) var(--ease-emph) forwards; }
+
+/* 8) Toasts (enter/leave helpers) */
+.toast-enter { animation: uv-toast-in var(--a-normal) var(--ease-spring) both; }
+.toast-leave { animation: uv-toast-out var(--a-normal) var(--ease-emph) forwards; }
+@keyframes uv-toast-in  { from { transform: translateY(-6px) scale(.98); opacity: 0 } to { transform: translateY(0) scale(1); opacity: 1 } }
+@keyframes uv-toast-out { to   { transform: translateY(-6px) scale(.98); opacity: 0 } }
+
+/* Optional: slide-in from edge (useful for stacked toasts) */
+.toast-enter-right { animation: uv-slide-in-right var(--a-normal) var(--ease-spring) both; }
+@keyframes uv-slide-in-right { from { transform: translateX(12px); opacity: 0 } to { transform: translateX(0); opacity: 1 } }
+
+/* 9) Collapse (grid trick: content wrapper inside) */
+.collapse {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--a-normal) var(--ease-smooth);
+}
+.collapse[aria-expanded="true"], .collapse.is-open { grid-template-rows: 1fr; }
+.collapse > .collapse-content { overflow: hidden; }
+
+/* 10) Skeleton shimmer */
+.skeleton {
+  position: relative; overflow: hidden;
+  background: color-mix(in oklab, var(--surface) 92%, transparent);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.skeleton::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    color-mix(in oklab, var(--text) 8%, transparent) 45%,
+    color-mix(in oklab, var(--text) 14%, transparent) 50%,
+    color-mix(in oklab, var(--text) 8%, transparent) 55%,
+    transparent 100%);
+  transform: translateX(-100%);
+  animation: uv-shimmer 1.25s linear infinite;
+}
+@keyframes uv-shimmer { to { transform: translateX(100%); } }
+.skeleton-circle { border-radius: 50%; }
+
+/* 11) Spinners */
+.spinner {
+  width: 24px; height: 24px; border-radius: 50%;
+  border: 3px solid color-mix(in oklab, var(--text) 18%, transparent);
+  border-top-color: var(--primary);
+  animation: uv-spin 1s linear infinite;
+}
+.spinner-sm { width: 18px; height: 18px; border-width: 2.5px; }
+.spinner-lg { width: 40px; height: 40px; border-width: 4px; }
+@keyframes uv-spin { to { transform: rotate(360deg); } }
+
+/* 12) Ripple (CSS-only center ripple) */
+.btn.ripple { position: relative; overflow: hidden; }
+.btn.ripple::after {
+  content: ""; position: absolute; left: 50%; top: 50%;
+  width: 0; height: 0; border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, color-mix(in oklab, var(--primary) 40%, transparent) 0%, transparent 60%);
+  opacity: 0; pointer-events: none;
+  transition: width .6s var(--ease-emph), height .6s var(--ease-emph), opacity .6s var(--ease-emph);
+}
+.btn.ripple:active::after {
+  width: 220%; height: 220%; opacity: .28; transition: none;
+}
+
+/* 13) Hero accent float */
+.hero-accent {
+  animation: uv-accent-float 14s ease-in-out infinite alternate;
+}
+@keyframes uv-accent-float {
+  0%   { transform: translate3d(0, 0, 0) scale(1); opacity: .9; }
+  50%  { transform: translate3d(3%, 6%, 0) scale(1.02); opacity: 1; }
+  100% { transform: translate3d(-2%, 2%, 0) scale(0.98); opacity: .92; }
+}
+
+/* 14) Reveal-on-scroll (add .is-visible via JS when intersecting) */
+.reveal { opacity: 0; transform: translateY(12px); transition: opacity 0.6s cubic-bezier(.22,.61,.36,1), transform 0.6s cubic-bezier(.22,.61,.36,1); }
+.reveal.is-visible { opacity: 1; transform: translateY(0) !important; }
+.reveal.fade { transition: opacity var(--a-normal) var(--ease-smooth); transform: none; }
+.reveal.slide-left  { transform: translateX(12px); }
+.reveal.slide-right { transform: translateX(-12px); }
+
+/* 15) Badges pulse (attention) */
+.badge.pulse {
+  animation: uv-pulse 1.6s var(--ease-smooth) infinite;
+}
+@keyframes uv-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--primary) 20%, transparent); }
+  50% { box-shadow: 0 0 0 8px color-mix(in oklab, var(--primary) 0%, transparent); }
+}
+
+/* 16) Card hover elevate (apply with class) */
+.card.lift {
+  transition: transform var(--a-normal), box-shadow var(--a-normal), border-color var(--a-normal);
+}
+.card.lift:hover { transform: translateY(-6px); box-shadow: var(--shadow, 0 10px 30px rgba(0,0,0,.35)); }
+
+/* 17) Tooltip fade (pair with positioning in your tooltip CSS) */
+.tooltip-enter { animation: uv-tooltip-in var(--a-normal) var(--ease-smooth) both; transform-origin: var(--origin, top center); }
+.tooltip-leave { animation: uv-tooltip-out var(--a-fast) var(--ease-emph) forwards; }
+@keyframes uv-tooltip-in  { from { transform: translateY(4px) scale(.98); opacity: 0 } to { transform: translateY(0) scale(1); opacity: 1 } }
+@keyframes uv-tooltip-out { to   { transform: translateY(4px) scale(.98); opacity: 0 } }
+
+/* 18) Focus ring pulse (optional, add on focus-visible) */
+.focus-pulse:focus-visible {
+  animation: uv-focus-pulse .8s ease-out;
+}
+@keyframes uv-focus-pulse {
+  0% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--primary) 35%, transparent); }
+  100% { box-shadow: 0 0 0 8px color-mix(in oklab, var(--primary) 0%, transparent); }
+}
+
+/* 19) Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+  .skeleton::after { animation: none !important; }
+}
+
+/* 20) Convenience utilities */
+.anim-fast   { animation-duration: var(--a-fast) !important; transition-duration: var(--a-fast) !important; }
+.anim-normal { animation-duration: var(--a-normal) !important; transition-duration: var(--a-normal) !important; }
+.anim-slow   { animation-duration: var(--a-slow) !important; transition-duration: var(--a-slow) !important; }
+
+.ease-smooth { animation-timing-function: var(--ease-smooth) !important; transition-timing-function: var(--ease-smooth) !important; }
+.ease-emph   { animation-timing-function: var(--ease-emph) !important; transition-timing-function: var(--ease-emph) !important; }
+.ease-bounce { animation-timing-function: var(--ease-bounce) !important; transition-timing-function: var(--ease-bounce) !important; }

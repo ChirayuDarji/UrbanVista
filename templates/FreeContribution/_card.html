@@ -1,0 +1,61 @@
+<article class="card experience-card reveal" data-experience-id="{{ experience.id }}">
+  <a href="{{ experience.get_absolute_url }}" class="card-image-link">
+    {% if experience.image %}
+      <div class="card-image-wrapper">
+        <img src="{{ experience.image.url }}" class="card-image" alt="{{ experience.title }}" loading="lazy" decoding="async">
+        <div class="card-overlay">
+          <span class="card-overlay-text">View Details</span>
+        </div>
+      </div>
+    {% else %}
+      <div class="card-image-wrapper card-image-placeholder">
+        <i class="fas fa-image"></i>
+        <span>No image</span>
+      </div>
+    {% endif %}
+  </a>
+  <div class="card-body">
+    <div class="card-badges">
+      <span class="badge badge-type badge-{{ experience.experience_type }}">
+        <i class="fas fa-{{ experience.experience_type|default:'map-marker-alt' }}"></i>
+        {{ experience.get_experience_type_display }}
+      </span>
+      {% if experience.category %}
+        <span class="badge badge-category">{{ experience.category }}</span>
+      {% endif %}
+    </div>
+    <h3 class="card-title">
+      <a href="{{ experience.get_absolute_url }}">{{ experience.title }}</a>
+    </h3>
+    {% if experience.description %}
+      <p class="card-description">{{ experience.description|truncatewords:20 }}</p>
+    {% endif %}
+    <div class="card-meta">
+      <div class="card-location">
+        <i class="fas fa-map-marker-alt"></i>
+        <span>{{ experience.location|default:"Unknown location" }}</span>
+      </div>
+      <div class="card-author">
+        <i class="fas fa-user"></i>
+        <span>{{ experience.user.username }}</span>
+        <span class="card-date">{{ experience.created_at|date:"M d, Y" }}</span>
+      </div>
+    </div>
+  </div>
+  <div class="card-footer">
+    <div class="card-stats">
+      <button class="card-stat-btn" data-upvote-btn data-url="{% url 'freecontribution:toggle_experience_upvote' experience.pk %}" aria-pressed="false" aria-label="Upvote">
+        <i class="fas fa-heart"></i>
+        <span data-count>{{ experience.upvotes_count|default:0 }}</span>
+      </button>
+      <a href="{{ experience.get_absolute_url }}#comments" class="card-stat-btn" aria-label="Comments">
+        <i class="fas fa-comment"></i>
+        <span>{{ experience.comments_count|default:0 }}</span>
+      </a>
+      <a href="{{ experience.get_absolute_url }}" class="btn btn-primary btn-sm">
+        <span>View</span>
+        <i class="fas fa-arrow-right"></i>
+      </a>
+    </div>
+  </div>
+</article>

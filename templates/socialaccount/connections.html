@@ -1,0 +1,75 @@
+{% extends "account/base.html" %}
+{% load i18n socialaccount %}
+
+{% block head_title %}{% trans "Account Connections" %}{% endblock %}
+
+{% block content %}
+  <header class="page">
+    <div>
+      <h2 style="margin:0">{% trans "Account Connections" %}</h2>
+      <div class="subtitle">{% trans "Manage third‑party logins linked to your account." %}</div>
+    </div>
+  </header>
+
+  <div class="card" style="max-width:760px">
+    {# Show form-level errors (e.g. cannot disconnect only login method) #}
+    {% if form.non_field_errors %}
+      <div style="color:var(--error); margin-bottom:12px;">
+        {{ form.non_field_errors }}
+      </div>
+    {% endif %}
+
+    {% if form.accounts %}
+      <form method="post" action="{% url 'socialaccount_connections' %}">
+        {% csrf_token %}
+        <div style="display:flex; flex-direction:column; gap:12px">
+          {% for base_account in form.accounts %}
+            <label for="id_account_{{ base_account.id }}" style="display:flex; align-items:center; gap:12px; padding:12px; border:1px solid var(--outline); border-radius:12px;">
+              <input id="id_account_{{ base_account.id }}" type="radio" name="account" value="{{ base_account.id }}">
+              {% if base_account.get_avatar_url %}
+                <img src="{{ base_account.get_avatar_url }}" class="avatar" alt="avatar">
+              {% endif %}
+              <div>
+                <div style="font-weight:500">
+                  {{ base_account.get_provider.name }}
+                </div>
+                <div class="subtitle">
+                  {{ base_account }}
+                </div>
+              </div>
+            </label>
+          {% endfor %}
+        </div>
+
+        {# Per-field errors (e.g. no radio selected) #}
+        {% if form.account.errors %}
+          <div style="color:var(--error); margin-top:8px;">{{ form.account.errors }}</div>
+        {% endif %}
+
+        <div class="form-actions">
+          {# If it’s the only linked account and user has no password, prevent removal #}
+          {% if form.accounts|length == 1 and not user.has_usable_password %}
+            <button class="btn btn-danger" type="submit" disabled
+                    title="{% trans 'Set a password first before disconnecting your only login method.' %}">
+              {% trans "Remove" %}
+            </button>
+            <a class="btn btn-outline" href="{% url 'account_set_password' %}">
+              {% trans "Set password" %}
+            </a>
+          {% else %}
+            <button class="btn btn-danger" type="submit" name="action" value="disconnect">
+              {% trans "Remove" %}
+            </button>
+          {% endif %}
+        </div>
+      </form>
+    {% else %}
+      <p class="subtitle">{% trans "No third‑party accounts connected yet." %}</p>
+    {% endif %}
+
+    <hr style="margin:16px 0; border:none; border-top:1px solid var(--outline)">
+
+    <h3 style="margin:0 0 8px 0">{% trans "Add a Third‑Party Account" %}</h3>
+    {% include "socialaccount/snippets/provider_list.html" with process="connect" %}
+  </div>
+{% endblock %}

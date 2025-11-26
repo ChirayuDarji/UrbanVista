@@ -1,0 +1,354 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Share a Travel Experience{% endblock %}
+
+{% block extra_css %}
+<style>
+@media (max-width: 700px) {
+  .grid-2 {
+    grid-template-columns: 1fr !important;
+  }
+  .media-form.card {
+    padding: 8px !important;
+  }
+  .container {
+    padding: 0 4px;
+  }
+  .btn, button.btn {
+    width: 100%;
+    margin-bottom: 8px;
+  }
+  #location-map {
+    height: 200px !important;
+  }
+}
+.field label, .media-form label {
+  font-weight: 600;
+  margin-bottom: 4px;
+  display: block;
+}
+input, select, textarea {
+  width: 100%;
+  max-width: 100%;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  margin-bottom: 4px;
+  font-size: 1rem;
+}
+.media-formset {
+  margin-bottom: 12px;
+}
+.media-form.card {
+  border-radius: 8px;
+}
+@media (min-width: 701px) {
+  .btn, button.btn {
+    min-width: 120px;
+  }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="container" style="max-width:880px;padding: 20px 0 28px;">
+  <header style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;">
+    <div>
+      <h1 style="margin:0;">Share a Travel Experience</h1>
+      <p class="muted">Inspire others by sharing your journey, place, or travel tip.</p>
+    </div>
+  </header>
+
+  <form method="post" enctype="multipart/form-data" class="card" style="display:grid;gap:14px;padding:16px;border:1px solid var(--border);border-radius:12px;background:var(--surface);">
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+      <div class="alert" style="padding:10px;border:1px solid var(--nav-border);border-radius:8px;background:rgba(255,0,0,.06);color:#ffbdbd;">
+        {{ form.non_field_errors }}
+      </div>
+    {% endif %}
+
+    <div class="grid-2" style="display:grid;gap:12px;grid-template-columns:1fr 1fr;">
+      <div class="field" style="grid-column:1/-1;">
+        <label for="{{ form.title.id_for_label }}">Title</label>
+        {{ form.title }}
+        {{ form.title.errors }}
+      </div>
+
+      <div class="field" style="grid-column:1/-1;">
+        <label for="{{ form.description.id_for_label }}">Description</label>
+        {{ form.description }}
+        {{ form.description.errors }}
+      </div>
+
+      <div class="field">
+        <label for="{{ form.category.id_for_label }}">Category</label>
+        {{ form.category }}
+        {{ form.category.errors }}
+      </div>
+
+      <div class="field">
+        <label for="{{ form.image.id_for_label }}">Image</label>
+        {{ form.image }}
+        {{ form.image.errors }}
+      </div>
+      <div class="field" style="grid-column:1/-1;">
+        <label for="{{ form.location.id_for_label }}">Location</label>
+        <div style="display:flex;gap:8px;align-items:center;position:relative;">
+          {{ form.location }}
+          <div id="location-suggestions" style="position:absolute;top:100%;left:0;right:0;z-index:10;background:#fff;border:1px solid #ccc;max-height:180px;overflow-y:auto;display:none;"></div>
+          <button type="button" class="btn" id="search-location-btn" title="Search address" tabindex="-1">🔍</button>
+          <button type="button" class="btn" id="current-location-btn" title="Use current location" tabindex="-1">📍</button>
+        </div>
+        <small id="location-msg" style="color: #888; display: block; margin-top: 4px;"></small>
+        {{ form.location.errors }}
+      </div>
+
+      <!-- MEDIA FORMSET WITH ADD MORE BUTTON -->
+      <div class="field" style="grid-column:1/-1;">
+        <h3 style="margin-bottom:8px;">Media (Images/Videos)</h3>
+        {{ formset.management_form }}
+        <div id="media-formset" class="media-formset">
+          {% for media_form in formset %}
+            <div class="media-form card" style="margin-bottom:10px;padding:10px;{% if forloop.counter > 1 %}display:none;{% endif %}">
+              <div>
+                {{ media_form.media_type.label_tag }} {{ media_form.media_type }}
+              </div>
+              <div>
+                {{ media_form.file.label_tag }} {{ media_form.file }}
+              </div>
+              <div>
+                {{ media_form.caption.label_tag }} {{ media_form.caption }}
+              </div>
+              {% if media_form.instance.pk %}
+                <div>
+                  {{ media_form.DELETE }} <label>Delete</label>
+                </div>
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+        <button type="button" class="btn btn-outline-primary" id="add-more-media" style="margin-top:8px;">Add More</button>
+      </div>
+      <!-- END MEDIA FORMSET -->
+
+      <div class="field">
+        <label for="{{ form.latitude.id_for_label }}">Latitude</label>
+        {{ form.latitude }}
+        {{ form.latitude.errors }}
+      </div>
+      <div class="field">
+        <label for="{{ form.longitude.id_for_label }}">Longitude</label>
+        {{ form.longitude }}
+        {{ form.longitude.errors }}
+      </div>
+
+      <div class="field">
+        <label for="{{ form.visited_on.id_for_label }}">Date of Visit</label>
+        {{ form.visited_on }}
+        {{ form.visited_on.errors }}
+      </div>
+    </div>
+
+    <!-- Map is outside the grid for full width -->
+    <div style="grid-column:1/-1;">
+      <div id="location-map" style="height: 320px; margin-top: 12px; border-radius: 8px; border: 1px solid #ccc;"></div>
+    </div>
+
+    <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;">
+      <a class="btn" href="{% url 'freecontribution:experience_home' %}">Cancel</a>
+      <button class="btn btn-primary" type="submit">Submit</button>
+    </div>
+  </form>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // --- Location/Map JS (unchanged) ---
+  const locationInput = document.getElementById('id_location');
+  const latInput = document.getElementById('id_latitude');
+  const lngInput = document.getElementById('id_longitude');
+  const msg = document.getElementById('location-msg');
+  const searchBtn = document.getElementById('search-location-btn');
+  const currentBtn = document.getElementById('current-location-btn');
+  const suggestionsBox = document.getElementById('location-suggestions');
+  const mapDiv = document.getElementById('location-map');
+
+  function showMsg(text, color='#888') {
+    msg.textContent = text;
+    msg.style.color = color;
+  }
+
+  let map = L.map(mapDiv).setView([20.5937, 78.9629], 5);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+  let marker = null;
+
+  function setMapMarker(lat, lng, zoom=15) {
+    if (marker) {
+      marker.setLatLng([lat, lng]);
+    } else {
+      marker = L.marker([lat, lng], {draggable: true}).addTo(map);
+      marker.on('dragend', function(e) {
+        const pos = marker.getLatLng();
+        latInput.value = pos.lat.toFixed(6);
+        lngInput.value = pos.lng.toFixed(6);
+        showMsg('Marker moved. Coordinates updated.', 'green');
+      });
+    }
+    map.setView([lat, lng], zoom);
+  }
+
+  if (latInput.value && lngInput.value) {
+    setMapMarker(parseFloat(latInput.value), parseFloat(lngInput.value));
+  }
+
+  let debounceTimeout = null;
+  locationInput.addEventListener('input', function() {
+    const query = locationInput.value.trim();
+    if (debounceTimeout) clearTimeout(debounceTimeout);
+    if (!query) {
+      suggestionsBox.style.display = 'none';
+      return;
+    }
+    debounceTimeout = setTimeout(() => {
+      fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&addressdetails=1&limit=5`)
+        .then(res => res.json())
+        .then(data => {
+          suggestionsBox.innerHTML = '';
+          if (data.length === 0) {
+            suggestionsBox.style.display = 'none';
+            return;
+          }
+          data.forEach(item => {
+            const div = document.createElement('div');
+            div.textContent = item.display_name;
+            div.style.padding = '6px 10px';
+            div.style.cursor = 'pointer';
+            div.addEventListener('mousedown', function(e) {
+              e.preventDefault();
+              locationInput.value = item.display_name;
+              latInput.value = item.lat;
+              lngInput.value = item.lon;
+              setMapMarker(item.lat, item.lon);
+              suggestionsBox.style.display = 'none';
+              showMsg('Location selected from suggestions.', 'green');
+            });
+            suggestionsBox.appendChild(div);
+          });
+          suggestionsBox.style.display = 'block';
+        });
+    }, 300);
+  });
+
+  document.addEventListener('mousedown', function(e) {
+    if (!suggestionsBox.contains(e.target) && e.target !== locationInput) {
+      suggestionsBox.style.display = 'none';
+    }
+  });
+
+  searchBtn.addEventListener('click', function() {
+    const address = locationInput.value.trim();
+    if (!address) {
+      showMsg('Please enter an address to search.', '#c00');
+      return;
+    }
+    showMsg('Searching...');
+    fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1`)
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.length > 0) {
+          latInput.value = data[0].lat;
+          lngInput.value = data[0].lon;
+          setMapMarker(data[0].lat, data[0].lon);
+          showMsg('Location found and coordinates filled!', 'green');
+        } else {
+          showMsg('No results found for this address.', '#c00');
+        }
+      })
+      .catch(() => showMsg('Error searching location.', '#c00'));
+  });
+
+  currentBtn.addEventListener('click', function() {
+    if (!navigator.geolocation) {
+      showMsg('Geolocation is not supported by your browser.', '#c00');
+      return;
+    }
+    showMsg('Getting your current location...');
+    navigator.geolocation.getCurrentPosition(
+      function(pos) {
+        const lat = pos.coords.latitude
+        const lng = pos.coords.longitude
+        latInput.value = lat.toFixed(6);
+        lngInput.value = lng.toFixed(6);
+        setMapMarker(lat, lng);
+        // Reverse geocode to fill location field
+        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=16&addressdetails=1`)
+          .then(res => res.json())
+          .then(data => {
+            const addr = data && data.address ? data.address : {}
+            const parts = [addr.neighbourhood, addr.suburb, addr.village, addr.town, addr.city, addr.state_district, addr.state]
+              .filter(Boolean)
+            const pretty = parts.join(', ')
+            if (pretty) locationInput.value = pretty
+            showMsg('Current location filled.', 'green')
+          })
+          .catch(() => showMsg('Coordinates set. Unable to resolve address name.', '#c80'))
+      },
+      function() {
+        showMsg('Unable to retrieve your location.', '#c00');
+      }
+    );
+  });
+
+  function updateMapFromFields() {
+    if (latInput.value && lngInput.value) {
+      setMapMarker(parseFloat(latInput.value), parseFloat(lngInput.value));
+    }
+  }
+  latInput.addEventListener('change', updateMapFromFields);
+  lngInput.addEventListener('change', updateMapFromFields);
+
+  // --- Add More Media JS ---
+  const addMoreBtn = document.getElementById('add-more-media');
+  const mediaFormset = document.getElementById('media-formset');
+  const totalForms = document.getElementById('id_form-TOTAL_FORMS');
+  addMoreBtn.addEventListener('click', function() {
+    const forms = mediaFormset.querySelectorAll('.media-form');
+    for (let i = 0; i < forms.length; i++) {
+      if (forms[i].style.display === 'none') {
+        forms[i].style.display = '';
+        totalForms.value = i + 1;
+        if (i === forms.length - 1) {
+          addMoreBtn.style.display = 'none';
+        }
+        break;
+      }
+    }
+  });
+
+  (function() {
+    const forms = mediaFormset.querySelectorAll('.media-form');
+    let shown = 0;
+    for (let i = 0; i < forms.length; i++) {
+      if (shown === 0) {
+        forms[i].style.display = '';
+        shown++;
+      } else {
+        forms[i].style.display = 'none';
+      }
+    }
+    totalForms.value = shown;
+    if (shown >= forms.length) {
+      addMoreBtn.style.display = 'none';
+    }
+  })();
+});
+</script>
+{% endblock %}

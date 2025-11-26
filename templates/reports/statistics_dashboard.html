@@ -1,0 +1,411 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Statistics & Analytics — UrbanVista{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+<link rel="stylesheet" href="{% static 'css/FreeContribution/fc-improvements.css' %}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+.stats-dashboard {
+    padding: 40px 20px;
+    background: var(--uv-c-surface-1, var(--surface, #121826));
+    min-height: 100vh;
+}
+
+.stats-container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.stats-header {
+    text-align: center;
+    margin-bottom: 48px;
+}
+
+.stats-header h1 {
+    font-size: clamp(32px, 5vw, 48px);
+    margin-bottom: 16px;
+    color: var(--text);
+    font-weight: 800;
+}
+
+.stats-header p {
+    font-size: 18px;
+    color: var(--muted);
+}
+
+.stats-overview {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 24px;
+    margin-bottom: 48px;
+}
+
+.stat-card {
+    background: var(--elev);
+    padding: 32px;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.2);
+    border-color: var(--primary);
+}
+
+.stat-card-number {
+    font-size: 48px;
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+    line-height: 1;
+}
+
+.stat-card-label {
+    font-size: 16px;
+    color: var(--muted);
+    font-weight: 600;
+}
+
+.charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 32px;
+    margin-bottom: 48px;
+}
+
+.chart-card {
+    background: var(--elev);
+    padding: 32px;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+}
+
+.chart-card h3 {
+    font-size: 20px;
+    margin-bottom: 24px;
+    color: var(--text);
+    font-weight: 700;
+}
+
+.chart-wrapper {
+    position: relative;
+    height: 300px;
+}
+
+.full-width-chart {
+    grid-column: 1 / -1;
+}
+
+.full-width-chart .chart-wrapper {
+    height: 400px;
+}
+
+.top-locations {
+    background: var(--elev);
+    padding: 32px;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    margin-bottom: 48px;
+}
+
+.top-locations h3 {
+    font-size: 20px;
+    margin-bottom: 24px;
+    color: var(--text);
+    font-weight: 700;
+}
+
+.location-list {
+    display: grid;
+    gap: 16px;
+}
+
+.location-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    background: var(--surface);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+}
+
+.location-name {
+    font-weight: 600;
+    color: var(--text);
+}
+
+.location-count {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+@media (max-width: 768px) {
+    .charts-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .chart-wrapper {
+        height: 250px;
+    }
+    
+    .full-width-chart .chart-wrapper {
+        height: 300px;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="stats-dashboard">
+    <div class="stats-container">
+        <div class="stats-header">
+            <h1>Statistics & Analytics</h1>
+            <p>Comprehensive insights into UrbanVista's civic engagement platform</p>
+        </div>
+
+        <!-- Overview Stats -->
+        <div class="stats-overview">
+            <div class="stat-card">
+                <div class="stat-card-number">{{ total_reports }}</div>
+                <div class="stat-card-label">Total Reports</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-number">{{ resolved_reports }}</div>
+                <div class="stat-card-label">Resolved</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-number">{{ pending_reports }}</div>
+                <div class="stat-card-label">Pending</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-number">{{ in_progress_reports }}</div>
+                <div class="stat-card-label">In Progress</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-number">{{ resolution_rate }}%</div>
+                <div class="stat-card-label">Resolution Rate</div>
+            </div>
+            {% if avg_resolution_days %}
+            <div class="stat-card">
+                <div class="stat-card-number">{{ avg_resolution_days }}</div>
+                <div class="stat-card-label">Avg. Resolution (Days)</div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Charts -->
+        <div class="charts-grid">
+            <!-- Status Distribution -->
+            <div class="chart-card">
+                <h3>Reports by Status</h3>
+                <div class="chart-wrapper">
+                    <canvas id="statusChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Category Distribution -->
+            <div class="chart-card">
+                <h3>Reports by Category</h3>
+                <div class="chart-wrapper">
+                    <canvas id="categoryChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Monthly Trends -->
+            <div class="chart-card full-width-chart">
+                <h3>Monthly Trends (Last 12 Months)</h3>
+                <div class="chart-wrapper">
+                    <canvas id="monthlyChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Daily Activity -->
+            <div class="chart-card full-width-chart">
+                <h3>Daily Activity (Last 30 Days)</h3>
+                <div class="chart-wrapper">
+                    <canvas id="dailyChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Locations -->
+        {% if top_locations %}
+        <div class="top-locations">
+            <h3>Top Locations by Report Count</h3>
+            <div class="location-list">
+                {% for location in top_locations %}
+                <div class="location-item">
+                    <span class="location-name">{{ location.location|truncatewords:10 }}</span>
+                    <span class="location-count">{{ location.count }} reports</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<script>
+// Status Chart
+const statusCtx = document.getElementById('statusChart').getContext('2d');
+const statusData = {{ status_data }};
+new Chart(statusCtx, {
+    type: 'doughnut',
+    data: {
+        labels: Object.keys(statusData).map(s => s.charAt(0).toUpperCase() + s.slice(1).replace('_', ' ')),
+        datasets: [{
+            data: Object.values(statusData),
+            backgroundColor: [
+                'rgba(14, 165, 233, 0.8)',
+                'rgba(255, 61, 129, 0.8)',
+                'rgba(34, 197, 94, 0.8)',
+                'rgba(245, 158, 11, 0.8)',
+                'rgba(239, 68, 68, 0.8)',
+            ],
+            borderWidth: 2,
+            borderColor: 'var(--surface)'
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: { color: 'var(--text)' }
+            }
+        }
+    }
+});
+
+// Category Chart
+const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+const categoryData = {{ category_data }};
+new Chart(categoryCtx, {
+    type: 'bar',
+    data: {
+        labels: Object.keys(categoryData).map(c => {
+            const labels = {
+                'road': 'Road/Pothole',
+                'garbage': 'Garbage',
+                'water': 'Water Leakage',
+                'streetlight': 'Streetlight',
+                'sewage': 'Sewage',
+                'other': 'Other'
+            };
+            return labels[c] || c;
+        }),
+        datasets: [{
+            label: 'Reports',
+            data: Object.values(categoryData),
+            backgroundColor: 'rgba(14, 165, 233, 0.8)',
+            borderColor: 'rgba(14, 165, 233, 1)',
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { display: false },
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: { color: 'var(--muted)' },
+                grid: { color: 'var(--border)' }
+            },
+            x: {
+                ticks: { color: 'var(--muted)' },
+                grid: { color: 'var(--border)' }
+            }
+        }
+    }
+});
+
+// Monthly Chart
+const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
+const monthlyData = {{ monthly_data }};
+new Chart(monthlyCtx, {
+    type: 'line',
+    data: {
+        labels: monthlyData.map(m => new Date(m.month).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })),
+        datasets: [{
+            label: 'Reports',
+            data: monthlyData.map(m => m.count),
+            borderColor: 'rgba(14, 165, 233, 1)',
+            backgroundColor: 'rgba(14, 165, 233, 0.1)',
+            tension: 0.4,
+            fill: true
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                labels: { color: 'var(--text)' }
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: { color: 'var(--muted)' },
+                grid: { color: 'var(--border)' }
+            },
+            x: {
+                ticks: { color: 'var(--muted)' },
+                grid: { color: 'var(--border)' }
+            }
+        }
+    }
+});
+
+// Daily Chart
+const dailyCtx = document.getElementById('dailyChart').getContext('2d');
+const dailyData = {{ daily_data }};
+new Chart(dailyCtx, {
+    type: 'bar',
+    data: {
+        labels: dailyData.map(d => new Date(d.day).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })),
+        datasets: [{
+            label: 'Reports',
+            data: dailyData.map(d => d.count),
+            backgroundColor: 'rgba(255, 61, 129, 0.8)',
+            borderColor: 'rgba(255, 61, 129, 1)',
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { display: false }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: { color: 'var(--muted)' },
+                grid: { color: 'var(--border)' }
+            },
+            x: {
+                ticks: { color: 'var(--muted)', maxRotation: 45, minRotation: 45 },
+                grid: { color: 'var(--border)' }
+            }
+        }
+    }
+});
+</script>
+{% endblock %}
+

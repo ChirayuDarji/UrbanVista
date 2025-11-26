@@ -1,0 +1,27 @@
+<div class="card h-100">
+    {% if report.image %}
+        <img src="{{ report.image.url }}" class="card-img-top" alt="Report Image" style="height:180px;object-fit:cover;">
+    {% endif %}
+    <div class="card-body">
+        <h5 class="card-title">
+            {{ report.get_issue_type_display }}
+            {% if report.issue_type == 'other' and report.other_issue %}
+                <span class="muted">({{ report.other_issue }})</span>
+            {% endif %}
+        </h5>
+        <p class="card-text">{{ report.description|truncatechars:80 }}</p>
+        <p class="mb-1"><strong>Location:</strong> {{ report.location }}</p>
+        <span class="badge
+            {% if report.status == 'pending' %}badge-pending
+            {% elif report.status == 'in_progress' %}badge-progress
+            {% elif report.status == 'resolved' %}badge-resolved
+            {% elif report.status == 'rejected' %}badge-rejected
+            {% endif %}">
+            {{ report.get_status_display }}
+        </span>
+        <a href="{% url 'reports:report_detail' report.id %}" class="btn btn-outline btn-sm float-end" style="margin-left:8px;">Details</a>
+    </div>
+    <div class="card-footer muted">
+        Submitted: {{ report.created_at|date:"d M Y, H:i" }}
+    </div>
+</div>

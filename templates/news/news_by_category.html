@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}{{ category.name }} News{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>{{ category.name }} News</h2>
+    <div class="grid">
+        {% for article in articles %}
+            <div class="card">
+                {% if article.featured_image %}
+                    <img src="{{ article.featured_image.url }}" class="card-img-top" alt="{{ article.title }}">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ article.title }}</h5>
+                    <p class="card-text">{{ article.excerpt|default:article.content|truncatechars:120 }}</p>
+                    <a href="{% url 'news:detail' article.slug %}" class="btn btn-outline btn-sm">Read More</a>
+                </div>
+                <div class="card-footer muted">
+                    Published: {{ article.published_at|date:"d M Y, H:i" }}
+                </div>
+            </div>
+        {% empty %}
+            <div class="alert alert-info">No news articles in this category yet.</div>
+        {% endfor %}
+    </div>
+    <a href="{% url 'news:list' %}" class="btn btn-outline mt-3">Back to All News</a>
+</div>
+{% endblock %}

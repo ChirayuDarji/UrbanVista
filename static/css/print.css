@@ -1,0 +1,118 @@
+/* Print Styles for Reports and News */
+
+@media print {
+    /* Hide navigation, buttons, and non-essential elements */
+    nav, .navbar, .mobile-bottom-nav, .floating-cta, .back-to-top,
+    .btn, button, .share-buttons, .section-nav-dots,
+    footer, .toasts, .notification-bell, .live-chat-widget {
+        display: none !important;
+    }
+    
+    /* Page setup */
+    @page {
+        margin: 2cm;
+        size: A4;
+    }
+    
+    body {
+        background: #fff;
+        color: #000;
+        font-size: 12pt;
+        line-height: 1.6;
+    }
+    
+    /* Report Detail Print Styles */
+    .report-detail-print {
+        max-width: 100%;
+    }
+    
+    .report-detail-print h1 {
+        font-size: 24pt;
+        margin-bottom: 12pt;
+        page-break-after: avoid;
+    }
+    
+    .report-detail-print img {
+        max-width: 100%;
+        height: auto;
+        page-break-inside: avoid;
+        margin: 12pt 0;
+    }
+    
+    .report-detail-print .report-meta {
+        border-top: 1px solid #ccc;
+        border-bottom: 1px solid #ccc;
+        padding: 12pt 0;
+        margin: 12pt 0;
+    }
+    
+    .report-detail-print .report-description {
+        margin: 12pt 0;
+    }
+    
+    /* News Detail Print Styles */
+    .news-detail-print {
+        max-width: 100%;
+    }
+    
+    .news-detail-print h1 {
+        font-size: 24pt;
+        margin-bottom: 12pt;
+        page-break-after: avoid;
+    }
+    
+    .news-detail-print .news-meta {
+        color: #666;
+        font-size: 10pt;
+        margin-bottom: 12pt;
+    }
+    
+    .news-detail-print img {
+        max-width: 100%;
+        height: auto;
+        page-break-inside: avoid;
+        margin: 12pt 0;
+    }
+    
+    .news-detail-print .news-content {
+        margin: 12pt 0;
+    }
+    
+    /* Avoid page breaks inside important elements */
+    h1, h2, h3, h4, h5, h6 {
+        page-break-after: avoid;
+    }
+    
+    img, table, pre {
+        page-break-inside: avoid;
+    }
+    
+    /* Links */
+    a {
+        color: #000;
+        text-decoration: underline;
+    }
+    
+    a[href^="http"]:after {
+        content: " (" attr(href) ")";
+        font-size: 10pt;
+        color: #666;
+    }
+    
+    /* Print header/footer */
+    .print-header {
+        border-bottom: 2px solid #000;
+        padding-bottom: 8pt;
+        margin-bottom: 16pt;
+    }
+    
+    .print-footer {
+        border-top: 1px solid #ccc;
+        padding-top: 8pt;
+        margin-top: 16pt;
+        font-size: 10pt;
+        color: #666;
+        text-align: center;
+    }
+}
+

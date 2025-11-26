@@ -1,0 +1,172 @@
+{% load i18n static %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:"en-us" }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
+<head>
+<title>{% block title %}{% endblock %}</title>
+<link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% static "admin/css/base.css" %}{% endblock %}">
+{% block extrastyle %}{% endblock %}
+{% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{% static "admin/css/rtl.css" %}{% endblock %}">{% endif %}
+{% block extrahead %}{% endblock %}
+{% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE">{% endblock %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-Avb2QiuDEEvB4bZJYdft2mNjVShBftLdPG8FJ0V7irTLQ8Uo0qcPxh4Plq7G5tGm0rU+1SPhVotteLpBERwTkw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link rel="stylesheet" type="text/css" href="{% static 'css/admin.css' %}">
+<script src="{% static 'js/admin.js' %}" defer></script>
+</head>
+{% load i18n %}
+
+<body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}"
+  data-admin-utc-offset="{% now "Z" %}">
+
+<!-- Container -->
+<div id="container">
+    {% if not is_popup %}
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
+        <i class="fas fa-bars"></i>
+    </button>
+    <!-- Header -->
+    <div id="header">
+        <div id="branding">
+        {% block branding %}{% endblock %}
+        </div>
+        {% block usertools %}
+        <div id="user-tools">
+            {% block welcome-msg %}
+                <span class="welcome-msg">
+                    <i class="fas fa-user-circle"></i>
+                    <span>{% translate 'Welcome,' %} <strong>{% firstof user.get_short_name user.get_username %}</strong></span>
+                </span>
+            {% endblock %}
+            {% block userlinks %}
+                <div class="user-links">
+                    {% if site_url %}
+                        <a href="{{ site_url }}" class="user-link">
+                            <i class="fas fa-external-link-alt"></i>
+                            <span>{% translate 'View site' %}</span>
+                        </a>
+                    {% endif %}
+                    {% if user.is_active and user.is_staff %}
+                        {% url 'django-admindocs-docroot' as docsroot %}
+                        {% if docsroot %}
+                            <a href="{{ docsroot }}" class="user-link">
+                                <i class="fas fa-book"></i>
+                                <span>{% translate 'Documentation' %}</span>
+                            </a>
+                        {% endif %}
+                    {% endif %}
+                    {% if user.has_usable_password %}
+                        <a href="{% url 'admin:password_change' %}" class="user-link">
+                            <i class="fas fa-key"></i>
+                            <span>{% translate 'Change password' %}</span>
+                        </a>
+                    {% endif %}
+                    <a href="{% url 'admin:logout' %}" class="user-link logout-link">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>{% translate 'Log out' %}</span>
+                    </a>
+                </div>
+            {% endblock %}
+        </div>
+        {% endblock %}
+        {% block nav-global %}{% endblock %}
+    </div>
+    <!-- END Header -->
+    
+    <!-- Sidebar -->
+    <div id="sidebar">
+        <div class="sidebar-header">
+            <h2>{% block site_title %}{{ site_header|default:_('Django administration') }}{% endblock %}</h2>
+        </div>
+        <nav class="sidebar-nav">
+            {% block sidebar-nav %}
+            <div class="nav-section">
+                <div class="nav-section-title">MENU</div>
+                <a href="{% url 'admin:index' %}" class="nav-item {% if request.resolver_match.url_name == 'index' %}active{% endif %}">
+                    <span class="nav-icon"><i class="fas fa-chart-line"></i></span>
+                    <span class="nav-text">Dashboard</span>
+                </a>
+            </div>
+            
+            {% if app_list or admin_app_list %}
+            {% for app in app_list|default:admin_app_list %}
+            <div class="nav-section">
+                <div class="nav-section-title">{{ app.name|upper }}</div>
+                {% for model in app.models %}
+                <a href="{% if model.admin_url %}{{ model.admin_url }}{% else %}#{% endif %}" 
+                   class="nav-item {% if model.admin_url and model.admin_url in request.path %}active{% endif %}">
+                    <span class="nav-icon">
+                        {% if "email" in model.name|lower or "address" in model.name|lower %}
+                            <i class="fas fa-envelope"></i>
+                        {% elif "user" in model.name|lower %}
+                            <i class="fas fa-user"></i>
+                        {% elif "group" in model.name|lower %}
+                            <i class="fas fa-users"></i>
+                        {% elif "project" in model.name|lower %}
+                            <i class="fas fa-project-diagram"></i>
+                        {% elif "category" in model.name|lower or "categor" in model.name|lower %}
+                            <i class="fas fa-tags"></i>
+                        {% elif "document" in model.name|lower or "file" in model.name|lower %}
+                            <i class="fas fa-file-alt"></i>
+                        {% elif "news" in model.name|lower %}
+                            <i class="fas fa-newspaper"></i>
+                        {% elif "report" in model.name|lower %}
+                            <i class="fas fa-file-chart-line"></i>
+                        {% elif "contribution" in model.name|lower or "free" in model.name|lower %}
+                            <i class="fas fa-hand-holding-heart"></i>
+                        {% elif "update" in model.name|lower %}
+                            <i class="fas fa-sync-alt"></i>
+                        {% elif "comment" in model.name|lower %}
+                            <i class="fas fa-comments"></i>
+                        {% elif "message" in model.name|lower %}
+                            <i class="fas fa-envelope-open-text"></i>
+                        {% elif "notification" in model.name|lower %}
+                            <i class="fas fa-bell"></i>
+                        {% elif "setting" in model.name|lower or "config" in model.name|lower %}
+                            <i class="fas fa-cog"></i>
+                        {% else %}
+                            <i class="fas fa-folder"></i>
+                        {% endif %}
+                    </span>
+                    <span class="nav-text">{{ model.name }}</span>
+                    {% if model.add_url %}
+                    <span class="nav-badge"><i class="fas fa-plus"></i></span>
+                    {% endif %}
+                </a>
+                {% endfor %}
+            </div>
+            {% endfor %}
+            {% else %}
+            <div class="nav-section">
+                <div class="nav-section-title">APPS</div>
+                <a href="{% url 'admin:index' %}" class="nav-item">
+                    <span class="nav-icon"><i class="fas fa-th-large"></i></span>
+                    <span class="nav-text">View All Apps</span>
+                </a>
+            </div>
+            {% endif %}
+            {% endblock %}
+        </nav>
+    </div>
+    <!-- END Sidebar -->
+    {% endif %}
+
+    <!-- Content -->
+    <div id="content" class="{% block coltype %}colM{% endblock %}">
+        {% block pretitle %}{% endblock %}
+        {% block content_title %}{% if title %}<h1 class="content-title">{{ title }}</h1>{% endif %}{% endblock %}
+        {% block content %}
+        {% block object-tools %}{% endblock %}
+        {{ content }}
+        {% endblock %}
+        {% block sidebar %}{% endblock %}
+        <br class="clear">
+    </div>
+    <!-- END Content -->
+
+    {% block footer %}<div id="footer"></div>{% endblock %}
+</div>
+<!-- END Container -->
+
+</body>
+</html>
+

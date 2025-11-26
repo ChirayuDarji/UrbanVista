@@ -1,0 +1,18 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}{{ title }} | {{ site_title|default:_('UrbanVista Admin') }}{% endblock %}
+
+{% block branding %}
+<h1 id="site-name">
+    <a href="{% url 'admin:index' %}">
+        <img src="{% static 'images/logo.png' %}" alt="UrbanVista Logo" class="header-logo">
+        <span class="brand-text">{{ site_header|default:_('UrbanVista Administration') }}</span>
+    </a>
+</h1>
+{% endblock %}
+
+{% block site_title %}
+{{ site_header|default:_('UrbanVista Administration') }}
+{% endblock %}
+

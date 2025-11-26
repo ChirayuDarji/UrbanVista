@@ -1,0 +1,244 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Travel Experiences{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/FreeContribution/fc-home.css' %}">
+<link rel="stylesheet" href="{% static 'css/FreeContribution/fc-improvements.css' %}">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+{% endblock %}
+
+{% block content %}
+
+<!-- Scroll Progress Bar -->
+<div class="scroll-progress" id="scroll-progress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+  <div class="scroll-progress-bar"></div>
+</div>
+
+<!-- Floating CTA -->
+<div class="floating-cta" id="floating-cta">
+  {% if user.is_authenticated %}
+    <a href="{% url 'freecontribution:experience_create' %}" class="btn btn-primary">
+      <i class="fas fa-plus-circle"></i>
+      <span>Share Experience</span>
+    </a>
+  {% else %}
+    <a href="{% url 'login' %}?next={% url 'freecontribution:experience_create' %}" class="btn btn-primary">
+      <i class="fas fa-sign-in-alt"></i>
+      <span>Get Started</span>
+    </a>
+  {% endif %}
+</div>
+
+<!-- Section Navigation Dots -->
+<nav class="section-nav-dots" aria-label="Page sections">
+  <a href="#hero" class="nav-dot active" data-section="hero" aria-label="Go to hero section">
+    <span class="dot-tooltip">Hero</span>
+  </a>
+  <a href="#how-to" class="nav-dot" data-section="how-to" aria-label="Go to how to section">
+    <span class="dot-tooltip">How To</span>
+  </a>
+  <a href="#map-section" class="nav-dot" data-section="map-section" aria-label="Go to map section">
+    <span class="dot-tooltip">Map</span>
+  </a>
+  <a href="#featured" class="nav-dot" data-section="featured" aria-label="Go to featured section">
+    <span class="dot-tooltip">Featured</span>
+  </a>
+</nav>
+
+<!-- HERO -->
+<section class="fc-hero reveal" id="hero">
+  <video id="heroVideo" autoplay muted loop playsinline preload="metadata" poster="{% static 'images/travel-hero-poster.jpg' %}" aria-label="Hero background video">
+    <source src="{% static 'videos/travel-hero.webm' %}" type="video/webm">
+    <source src="{% static 'videos/travel-hero.mp4' %}" type="video/mp4">
+  </video>
+  <div class="overlay" aria-hidden="true"></div>
+  <div class="content container">
+    <h1>See the World Through Travelers' Eyes</h1>
+    <p class="lead">Share your journeys, discover new places, and inspire others.</p>
+    <div class="cta">
+      {% if user.is_authenticated %}
+        <a class="btn btn-primary btn-lg" href="{% url 'freecontribution:experience_create' %}">
+          <i class="fas fa-plus-circle"></i>
+          <span>Share Your Experience</span>
+        </a>
+      {% else %}
+        <a class="btn btn-primary btn-lg" href="{% url 'login' %}?next={% url 'freecontribution:experience_create' %}">
+          <i class="fas fa-sign-in-alt"></i>
+          <span>Login to Share</span>
+        </a>
+      {% endif %}
+      <a href="#featured" class="btn btn-ghost">
+        <i class="fas fa-arrow-down"></i>
+        <span>Explore</span>
+      </a>
+    </div>
+    <div class="hero-video-controls">
+      <button id="heroToggle" class="btn btn-ghost btn-sm" aria-label="Toggle video playback" aria-pressed="true">
+        <i class="fas fa-pause"></i>
+        <span class="sr-only">Pause video</span>
+      </button>
+    </div>
+  </div>
+  <div class="scroll-indicator" aria-hidden="true">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M12 5v14M19 12l-7 7-7-7"/>
+    </svg>
+  </div>
+</section>
+
+<!-- Section Divider -->
+<div class="section-divider"></div>
+
+<!-- HOW TO CONTRIBUTE -->
+<section class="container reveal" id="how-to" style="padding: 12px 0 12px;">
+  <div class="how-to-contribute">
+    <div class="how-to-header">
+      <i class="fas fa-lightbulb"></i>
+      <h2>How to Share</h2>
+    </div>
+    <div class="how-to-steps">
+      <div class="step-item" data-step="1">
+        <div class="step-number">1</div>
+        <div class="step-content">
+          <h3>Click Share Your Experience</h3>
+          <p>Start by clicking the button above to create your contribution.</p>
+        </div>
+      </div>
+      <div class="step-item" data-step="2">
+        <div class="step-number">2</div>
+        <div class="step-content">
+          <h3>Fill in the Details</h3>
+          <p>Add a title, description, location, and upload photos or videos.</p>
+        </div>
+      </div>
+      <div class="step-item" data-step="3">
+        <div class="step-number">3</div>
+        <div class="step-content">
+          <h3>Submit & Inspire</h3>
+          <p>Your story could inspire someone's next adventure!</p>
+        </div>
+      </div>
+    </div>
+    <p class="muted how-to-footer">Or browse the map and featured journeys below.</p>
+  </div>
+</section>
+
+<!-- MAP -->
+<section class="container reveal" id="map-section">
+  <header class="section-head">
+    <h2>Travel Map</h2>
+    <p class="section-subtitle muted">Explore experiences around the world</p>
+  </header>
+  <div class="fc-map-wrap">
+    <div class="map-loading" id="map-loading">
+      <div class="spinner"></div>
+      <span>Loading map...</span>
+    </div>
+    <div
+      id="fcMap"
+      role="region"
+      aria-label="Travel experience map"
+      data-api="{% url 'freecontribution:experience_map_data' %}"
+    ></div>
+    <div class="fc-map-controls">
+      <div class="btn-group" role="group" aria-label="Map filters">
+        <button class="btn btn-outline" data-map-filter value="" aria-pressed="true">
+          <i class="fas fa-globe"></i>
+          <span>All</span>
+        </button>
+        <button class="btn btn-outline" data-map-filter value="place" aria-pressed="false">
+          <i class="fas fa-map-marker-alt"></i>
+          <span>Places</span>
+        </button>
+        <button class="btn btn-outline" data-map-filter value="activity" aria-pressed="false">
+          <i class="fas fa-hiking"></i>
+          <span>Activities</span>
+        </button>
+        <button class="btn btn-outline" data-map-filter value="story" aria-pressed="false">
+          <i class="fas fa-book"></i>
+          <span>Stories</span>
+        </button>
+        <button class="btn btn-outline" data-map-filter value="tip" aria-pressed="false">
+          <i class="fas fa-lightbulb"></i>
+          <span>Tips</span>
+        </button>
+      </div>
+      <div class="fc-legend">
+        <span><span class="dot dot-place"></span> Place</span>
+        <span><span class="dot dot-activity"></span> Activity</span>
+        <span><span class="dot dot-story"></span> Story</span>
+        <span><span class="dot dot-tip"></span> Tip</span>
+      </div>
+    </div>
+    <div class="map-update-indicator" id="map-update-indicator" style="display: none;">
+      <span class="update-dot"></span>
+      <span>Last updated: <span id="map-last-updated">Just now</span></span>
+    </div>
+  </div>
+</section>
+
+<!-- Section Divider -->
+<div class="section-divider"></div>
+
+<!-- FEATURED EXPERIENCES -->
+<section class="container reveal" id="featured" style="padding: 16px 0 8px;">
+  <header class="section-head">
+    <div>
+      <h2>Featured Experiences</h2>
+      <p class="section-subtitle muted">Discover amazing journeys shared by travelers</p>
+    </div>
+    <a class="btn btn-outline" href="{% url 'freecontribution:experience_home' %}">
+      <i class="fas fa-arrow-right"></i>
+      <span>See all</span>
+    </a>
+  </header>
+  {% if experiences and experiences|length %}
+    <div class="grid experience-grid" data-pagination-container>
+      {% for exp in experiences %}
+        {% include "FreeContribution/_card.html" with experience=exp %}
+      {% endfor %}
+    </div>
+  {% else %}
+    {% include "FreeContribution/_empty_state.html" with message="No travel experiences yet. Be the first to add one!" %}
+  {% endif %}
+  {% include "FreeContribution/_pagination.html" with page_obj=page_obj %}
+</section>
+
+<!-- Mobile Bottom Navigation -->
+<nav class="mobile-bottom-nav" id="mobile-bottom-nav" aria-label="Mobile navigation">
+  <a href="#hero" class="mobile-nav-item active" data-section="hero">
+    <i class="fas fa-home"></i>
+    <span>Home</span>
+  </a>
+  <a href="#map-section" class="mobile-nav-item" data-section="map-section">
+    <i class="fas fa-map"></i>
+    <span>Map</span>
+  </a>
+  {% if user.is_authenticated %}
+    <a href="{% url 'freecontribution:experience_create' %}" class="mobile-nav-item mobile-nav-create">
+      <i class="fas fa-plus-circle"></i>
+      <span>Create</span>
+    </a>
+  {% else %}
+    <a href="{% url 'login' %}?next={% url 'freecontribution:experience_create' %}" class="mobile-nav-item mobile-nav-create">
+      <i class="fas fa-sign-in-alt"></i>
+      <span>Login</span>
+    </a>
+  {% endif %}
+  <a href="#featured" class="mobile-nav-item" data-section="featured">
+    <i class="fas fa-star"></i>
+    <span>Featured</span>
+  </a>
+  <a href="#how-to" class="mobile-nav-item" data-section="how-to">
+    <i class="fas fa-info-circle"></i>
+    <span>How To</span>
+  </a>
+</nav>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin="" defer></script>
+<script src="{% static 'js/FreeContribution/fc-home.js' %}" defer></script>
+{% endblock %}

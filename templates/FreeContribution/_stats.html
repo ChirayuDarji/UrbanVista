@@ -1,0 +1,15 @@
+{# Key stats: expects total_contributions, active_users, resolved_issues #}
+<div class="stats" style="display:flex;gap:12px;flex-wrap:wrap;">
+  <div class="stat" style="padding:10px 12px;border:1px solid var(--nav-border);border-radius:10px;">
+    <div class="muted" style="font-size:12px;">Total</div>
+    <strong style="font-size:18px;">{{ total_contributions }}</strong>
+  </div>
+  <div class="stat" style="padding:10px 12px;border:1px solid var(--nav-border);border-radius:10px;">
+    <div class="muted" style="font-size:12px;">Active users</div>
+    <strong style="font-size:18px;">{{ active_users }}</strong>
+  </div>
+  <div class="stat" style="padding:10px 12px;border:1px solid var(--nav-border);border-radius:10px;">
+    <div class="muted" style="font-size:12px;">Resolved</div>
+    <strong style="font-size:18px;">{{ resolved_issues }}</strong>
+  </div>
+</div>

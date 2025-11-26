@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ experience_type|capfirst }} Experiences{% endblock %}
+
+{% block content %}
+<section class="container" style="padding: 18px 0 8px;">
+  <div class="card">
+    <h1>{{ experience_type|capfirst }} Experiences</h1>
+    <p class="muted">Browse all {{ experience_type }}s shared by travelers.</p>
+  </div>
+</section>
+
+<section class="container">
+  {% include "Freecontribution/_filters.html" with active=experience_type %}
+</section>
+
+<section class="container" style="padding: 12px 0 8px;">
+  {% if experiences and experiences|length %}
+    <div class="grid">
+      {% for exp in experiences %}
+        {% include "Freecontribution/_card.html" with experience=exp %}
+      {% endfor %}
+    </div>
+  {% else %}
+    {% include "Freecontribution/_empty_state.html" with message="Nothing found for this filter yet." %}
+  {% endif %}
+  {% include "Freecontribution/_pagination.html" with page_obj=page_obj %}
+</section>
+{% endblock %}

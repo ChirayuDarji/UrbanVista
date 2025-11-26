@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{{ article.title }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/print.css' %}" media="print">
+<style>
+.share-buttons {
+    display: flex;
+    gap: 12px;
+    margin: 24px 0;
+    flex-wrap: wrap;
+}
+
+.share-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: var(--elev);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.share-btn:hover {
+    transform: translateY(-2px);
+    border-color: var(--primary);
+}
+
+.share-btn.facebook:hover { background: #1877f2; color: #fff; border-color: #1877f2; }
+.share-btn.twitter:hover { background: #1da1f2; color: #fff; border-color: #1da1f2; }
+.share-btn.whatsapp:hover { background: #25d366; color: #fff; border-color: #25d366; }
+.share-btn.copy:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4" style="max-width:800px;">
+    <div class="card mb-4">
+        {% if article.featured_image %}
+            <img src="{{ article.featured_image.url }}" class="card-img-top" alt="{{ article.title }}">
+        {% endif %}
+        <div class="card-body">
+            <h1 class="card-title">{{ article.title }}</h1>
+            <span class="badge badge-primary">{{ article.category.name }}</span>
+            <p class="muted">By {{ article.author.get_full_name|default:article.author.username }} | {{ article.published_at|date:"d M Y, H:i" }}</p>
+            <div class="mb-3">{{ article.content|linebreaks }}</div>
+            <div class="muted">Views: {{ article.views }}</div>
+            
+            <!-- Share Buttons -->
+            <hr>
+            <div class="share-buttons">
+                <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank" class="share-btn facebook">
+                    <i class="fab fa-facebook-f"></i> Facebook
+                </a>
+                <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}&text={{ article.title|urlencode }}" target="_blank" class="share-btn twitter">
+                    <i class="fab fa-twitter"></i> Twitter
+                </a>
+                <a href="https://wa.me/?text={{ article.title|urlencode }}%20-%20{{ request.build_absolute_uri|urlencode }}" target="_blank" class="share-btn whatsapp">
+                    <i class="fab fa-whatsapp"></i> WhatsApp
+                </a>
+                <button onclick="copyToClipboard('{{ request.build_absolute_uri }}')" class="share-btn copy">
+                    <i class="fas fa-link"></i> Copy Link
+                </button>
+                <button onclick="window.print()" class="share-btn" style="background: var(--primary); color: #fff; border-color: var(--primary);">
+                    <i class="fas fa-print"></i> Print
+                </button>
+            </div>
+        </div>
+    </div>
+    <a href="{% url 'news:list' %}" class="btn btn-outline">Back to News</a>
+</div>
+
+<script>
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        alert('Link copied to clipboard!');
+    }).catch(() => {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        alert('Link copied to clipboard!');
+    });
+}
+</script>
+{% endblock %}

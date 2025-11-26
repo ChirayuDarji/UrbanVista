@@ -1,0 +1,744 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}UrbanVista — Smart Geolocation Platform{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/home.css' %}">
+  <link rel="stylesheet" href="{% static 'css/home-improvements.css' %}">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+#site-header,header.navbar{position:sticky;top:0;z-index:10000!important}
+.map-section,.map-wrapper,.interactive-map,.leaflet-container{position:relative;z-index:0!important}
+.leaflet-pane,.leaflet-tile-pane,.leaflet-overlay-pane,.leaflet-shadow-pane,.leaflet-marker-pane,.leaflet-tooltip-pane,.leaflet-popup-pane{z-index:0!important}
+.leaflet-control-container,.leaflet-top,.leaflet-bottom{z-index:400!important}
+:where(.map-wrapper):fullscreen,:where(.map-wrapper):-webkit-full-screen,:where(.map-wrapper):-moz-full-screen,:where(.map-wrapper):-ms-fullscreen{z-index:99999!important}
+.leaflet-pseudo-fullscreen{z-index:99999!important}
+#map,.map-section{scroll-margin-top:var(--nav-h,64px)}
+</style>
+{% endblock %}
+
+{% block main_class %}{% endblock %}
+{% block content %}
+
+<!-- Scroll Progress Bar -->
+<div class="scroll-progress" id="scroll-progress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+  <div class="scroll-progress-bar"></div>
+</div>
+
+<!-- Floating CTA -->
+<div class="floating-cta" id="floating-cta">
+  <a href="{% url 'account_signup' %}" class="btn btn-primary">
+    <i class="fas fa-rocket"></i>
+    <span>Get Started</span>
+  </a>
+</div>
+
+<!-- Section Navigation Dots -->
+<nav class="section-nav-dots" aria-label="Page sections">
+  <a href="#home" class="nav-dot active" data-section="home" aria-label="Go to hero section">
+    <span class="dot-tooltip">Home</span>
+  </a>
+  <a href="#features" class="nav-dot" data-section="features" aria-label="Go to features section">
+    <span class="dot-tooltip">Features</span>
+  </a>
+  <a href="#how-it-works" class="nav-dot" data-section="how-it-works" aria-label="Go to how it works section">
+    <span class="dot-tooltip">How It Works</span>
+  </a>
+  <a href="#solutions" class="nav-dot" data-section="solutions" aria-label="Go to solutions section">
+    <span class="dot-tooltip">Solutions</span>
+  </a>
+  <a href="#stats" class="nav-dot" data-section="stats" aria-label="Go to stats section">
+    <span class="dot-tooltip">Stats</span>
+  </a>
+  <a href="#map" class="nav-dot" data-section="map" aria-label="Go to map section">
+    <span class="dot-tooltip">Map</span>
+  </a>
+  <a href="#testimonials" class="nav-dot" data-section="testimonials" aria-label="Go to testimonials section">
+    <span class="dot-tooltip">Testimonials</span>
+  </a>
+  <a href="#contact" class="nav-dot" data-section="contact" aria-label="Go to contact section">
+    <span class="dot-tooltip">Contact</span>
+  </a>
+</nav>
+
+<!-- Hero Search Bar -->
+<div class="hero-search" id="hero-search">
+  <div class="search-wrapper">
+    <i class="fas fa-search search-icon"></i>
+    <input type="search" placeholder="Search locations, contributions..." id="global-search" autocomplete="off">
+    <button class="search-close" id="search-close" aria-label="Close search"><i class="fas fa-times"></i></button>
+  </div>
+  <div class="search-results" id="search-results"></div>
+</div>
+
+<!-- Live Chat Widget -->
+<div class="live-chat-widget" id="live-chat-widget">
+  <button class="chat-toggle" aria-label="Open live chat" data-tooltip="Need help? Chat with us" data-tooltip-position="left">
+    <i class="fas fa-comments"></i>
+    <span class="chat-badge">1</span>
+  </button>
+  <div class="chat-window" id="chat-window">
+    <div class="chat-header">
+      <h4>Live Chat</h4>
+      <button class="chat-close" aria-label="Close chat"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="chat-messages" id="chat-messages">
+      <div class="chat-message bot">
+        <p>Hi! How can we help you today?</p>
+      </div>
+    </div>
+    <div class="chat-input-wrapper">
+      <input type="text" placeholder="Type your message..." id="chat-input" autocomplete="off">
+      <button class="chat-send" aria-label="Send message"><i class="fas fa-paper-plane"></i></button>
+    </div>
+  </div>
+</div>
+
+<!-- Notification Bell -->
+<div class="notification-bell" id="notification-bell">
+  <button class="bell-toggle" aria-label="Notifications" data-tooltip="Notifications" data-tooltip-position="left">
+    <i class="fas fa-bell"></i>
+    <span class="notification-badge">3</span>
+  </button>
+  <div class="notification-panel" id="notification-panel">
+    <div class="notification-header">
+      <h4>Notifications</h4>
+      <button class="notification-close" aria-label="Close notifications"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="notification-list">
+      <div class="notification-item unread">
+        <i class="fas fa-map-marker-alt"></i>
+        <div>
+          <strong>New contribution nearby</strong>
+          <p>Someone added a new location in your area</p>
+          <span class="notification-time">2 min ago</span>
+        </div>
+      </div>
+      <div class="notification-item unread">
+        <i class="fas fa-users"></i>
+        <div>
+          <strong>Community milestone</strong>
+          <p>We've reached 500K active contributors!</p>
+          <span class="notification-time">1 hour ago</span>
+        </div>
+      </div>
+      <div class="notification-item">
+        <i class="fas fa-star"></i>
+        <div>
+          <strong>Your review was helpful</strong>
+          <p>5 people found your review helpful</p>
+          <span class="notification-time">3 hours ago</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Mobile Bottom Navigation -->
+<nav class="mobile-bottom-nav" id="mobile-bottom-nav" aria-label="Mobile navigation">
+  <a href="#home" class="mobile-nav-item active" data-section="home">
+    <i class="fas fa-home"></i>
+    <span>Home</span>
+  </a>
+  <a href="#features" class="mobile-nav-item" data-section="features">
+    <i class="fas fa-star"></i>
+    <span>Features</span>
+  </a>
+  <a href="#map" class="mobile-nav-item" data-section="map">
+    <i class="fas fa-map"></i>
+    <span>Map</span>
+  </a>
+  <a href="#contact" class="mobile-nav-item" data-section="contact">
+    <i class="fas fa-envelope"></i>
+    <span>Contact</span>
+  </a>
+</nav>
+
+<!-- Hero -->
+<section id="home" class="hero-alt">
+  <div class="container">
+    <div class="hero-grid">
+      <div class="hero-left">
+        <span class="hero-kicker">UrbanVista</span>
+        <h1 class="hero-heading">
+          Navigate cities smarter with
+          <span class="hero-highlight">community‑driven insights</span>
+        </h1>
+        <p class="hero-lead">
+          Real‑time geolocation updates verified by people on the ground.
+          Discover hotspots, avoid delays, and contribute to a living city map.
+        </p>
+
+        <div class="hero-actions">
+          <a href="#get-started" class="btn btn-primary btn-lg">Get Started</a>
+          <a href="#how-it-works" class="btn btn-ghost">Watch Demo</a>
+        </div>
+
+        <div class="hero-stats">
+          <div class="stat" data-count="12000" data-suffix="+"><strong class="stat-counter">0</strong><span>Daily contributions</span></div>
+          <div class="dot"></div>
+          <div class="stat" data-count="190"><strong class="stat-counter">0</strong><span>Cities covered</span></div>
+          <div class="dot"></div>
+          <div class="stat"><strong>4.9/5</strong><span>User rating</span></div>
+        </div>
+        
+        <!-- Scroll Indicator -->
+        <div class="scroll-indicator">
+          <span>Scroll to explore</span>
+          <div class="scroll-arrow">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 5v14M19 12l-7 7-7-7"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-right">
+        <div class="media-stack">
+          <div class="device-frame">
+            <video class="media-video" id="hero-video" autoplay muted loop playsinline>
+              <source src="{% static 'images/newviedo.mp4' %}" type="video/mp4"/>
+            </video>
+            <div class="video-controls">
+              <button class="video-btn" id="video-play-pause" aria-label="Play/Pause" data-tooltip="Play/Pause" data-tooltip-position="top">
+                <i class="fas fa-pause"></i>
+              </button>
+              <button class="video-btn" id="video-mute" aria-label="Mute/Unmute" data-tooltip="Mute/Unmute" data-tooltip-position="top">
+                <i class="fas fa-volume-up"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="chip chip-a"><span class="dot green"></span> Live updates</div>
+          <div class="chip chip-b"><span class="dot blue"></span> +2,143 pins today</div>
+          <div class="chip chip-c"><span class="dot orange"></span> ETA: 2 min</div>
+
+          <span class="ring ring-1"></span>
+          <span class="ring ring-2"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section Divider -->
+<div class="section-divider"></div>
+
+<!-- Features -->
+<section id="features" class="features-section">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Why Choose UrbanVista?</h2>
+      <p class="section-subtitle">Powerful features for everyone</p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card" data-feature="mapping">
+        <div class="feature-icon"><i class="fas fa-map-marked-alt"></i></div>
+        <h3>Real‑time Mapping</h3>
+        <p>Live updates from contributors worldwide</p>
+        <a href="#map" class="feature-link">Learn more <i class="fas fa-arrow-right"></i></a>
+        <div class="feature-preview">Interactive map with real-time updates</div>
+      </div>
+      <div class="feature-card" data-feature="community">
+        <div class="feature-icon"><i class="fas fa-users"></i></div>
+        <h3>Community Driven</h3>
+        <p>500K+ active contributors</p>
+        <a href="#contributions" class="feature-link">Learn more <i class="fas fa-arrow-right"></i></a>
+        <div class="feature-preview">Join thousands of active contributors</div>
+      </div>
+      <div class="feature-card" data-feature="analytics">
+        <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+        <h3>Smart Analytics</h3>
+        <p>Data insights for better decisions</p>
+        <a href="#solutions" class="feature-link">Learn more <i class="fas fa-arrow-right"></i></a>
+        <div class="feature-preview">Advanced analytics dashboard</div>
+      </div>
+      <div class="feature-card" data-feature="verified">
+        <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
+        <h3>Verified Data</h3>
+        <p>Community‑verified information</p>
+        <a href="#features" class="feature-link">Learn more <i class="fas fa-arrow-right"></i></a>
+        <div class="feature-preview">Trusted and verified data sources</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section Divider -->
+<div class="section-divider"></div>
+
+<!-- How it works -->
+<section id="how-it-works" class="how-it-works-section">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">How It Works</h2>
+      <p class="section-subtitle">Simple steps to get started</p>
+    </div>
+
+    <div class="steps-wrapper">
+      <div class="steps-connector"></div>
+      <div class="step-item" data-step="1">
+        <div class="step-number">1</div>
+        <div class="step-content">
+          <img src="{% static 'images/image4.png' %}" alt="Sign up illustration showing user registration process" class="step-image" loading="lazy" decoding="async"/>
+          <h3>Sign Up</h3><p>Create your free account in seconds</p>
+          <button class="step-demo-btn" data-demo="signup">Try Demo <i class="fas fa-play"></i></button>
+        </div>
+      </div>
+      <div class="step-item" data-step="2">
+        <div class="step-number">2</div>
+        <div class="step-content">
+          <img src="{% static 'images/image3.png' %}" alt="Contribute illustration showing community contribution" class="step-image" loading="lazy" decoding="async"/>
+          <h3>Contribute</h3><p>Share photos, locations, and reviews</p>
+          <button class="step-demo-btn" data-demo="contribute">Try Demo <i class="fas fa-play"></i></button>
+        </div>
+      </div>
+      <div class="step-item" data-step="3">
+        <div class="step-number">3</div>
+        <div class="step-content">
+          <img src="{% static 'images/image2.png' %}" alt="Explore illustration showing map exploration" class="step-image" loading="lazy" decoding="async"/>
+          <h3>Explore</h3><p>Discover places with real‑time data</p>
+          <button class="step-demo-btn" data-demo="explore">Try Demo <i class="fas fa-play"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section Divider -->
+<div class="section-divider"></div>
+
+<!-- Contribution types -->
+<section id="contributions" class="contributions-section">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Make a Difference</h2>
+      <p class="section-subtitle">Every contribution helps build a smarter world</p>
+    </div>
+
+    <div class="contribution-wrapper">
+      <div class="contribution-media">
+        <img src="{% static 'images/image1.png' %}" alt="Community contributors working together" class="contribution-image" loading="lazy" decoding="async"/>
+      </div>
+      <div class="contribution-content">
+        <div class="contribution-item reveal"><i class="fas fa-camera"></i><div><h4>Upload Photos</h4><p>Share street views and landmarks</p></div></div>
+        <div class="contribution-item reveal"><i class="fas fa-map-pin"></i><div><h4>Add Locations</h4><p>Mark new places on the map</p></div></div>
+        <div class="contribution-item reveal"><i class="fas fa-star"></i><div><h4>Rate & Review</h4><p>Help others with your experience</p></div></div>
+        <div class="contribution-item reveal"><i class="fas fa-flag"></i><div><h4>Report Changes</h4><p>Keep information up‑to‑date</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section Divider -->
+<div class="section-divider"></div>
+
+<!-- Solutions tabs -->
+<section id="solutions" class="solutions-section">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Solutions for Every Need</h2>
+      <p class="section-subtitle">Tailored services for different sectors</p>
+    </div>
+
+    <div class="solutions-tabs">
+      <div class="tab-buttons">
+        <button class="tab-btn active" data-tab="business">
+          <i class="fas fa-briefcase"></i>
+          <span>Business</span>
+        </button>
+        <button class="tab-btn" data-tab="government">
+          <i class="fas fa-landmark"></i>
+          <span>Government</span>
+        </button>
+        <button class="tab-btn" data-tab="research">
+          <i class="fas fa-microscope"></i>
+          <span>Research</span>
+        </button>
+      </div>
+
+      <div class="tab-content">
+        <div class="tab-pane active" id="business">
+          <div class="solution-card">
+            <div class="solution-image"><img src="{% static 'images/image5.png' %}" alt="Business solutions dashboard and analytics" loading="lazy" decoding="async"/></div>
+            <div class="solution-info">
+              <h3>For Businesses</h3>
+              <p>Enhance operations with real‑time location intelligence</p>
+              <ul class="solution-features">
+                <li><i class="fas fa-check"></i> API Integration</li>
+                <li><i class="fas fa-check"></i> Custom Analytics</li>
+                <li><i class="fas fa-check"></i> Delivery Optimization</li>
+                <li><i class="fas fa-check"></i> Customer Insights</li>
+              </ul>
+              <a href="#contact" class="btn btn-primary">Learn More</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-pane" id="government">
+          <div class="solution-card">
+            <div class="solution-image"><img src="{% static 'images/image6.png' %}" alt="Government solutions for smart cities" loading="lazy" decoding="async"/></div>
+            <div class="solution-info">
+              <h3>For Government</h3>
+              <p>Smart city solutions for better public services</p>
+              <ul class="solution-features">
+                <li><i class="fas fa-check"></i> Urban Planning Tools</li>
+                <li><i class="fas fa-check"></i> Emergency Response</li>
+                <li><i class="fas fa-check"></i> Infrastructure Monitoring</li>
+                <li><i class="fas fa-check"></i> Citizen Engagement</li>
+              </ul>
+              <a href="#contact" class="btn btn-primary">Learn More</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-pane" id="research">
+          <div class="solution-card">
+            <div class="solution-image"><img src="{% static 'images/image7.png' %}" alt="Research solutions and data analytics" loading="lazy" decoding="async"/></div>
+            <div class="solution-info">
+              <h3>For Researchers</h3>
+              <p>Comprehensive datasets for academic excellence</p>
+              <ul class="solution-features">
+                <li><i class="fas fa-check"></i> Data Export Tools</li>
+                <li><i class="fas fa-check"></i> Historical Archives</li>
+                <li><i class="fas fa-check"></i> Research Collaboration</li>
+                <li><i class="fas fa-check"></i> Academic Licensing</li>
+              </ul>
+              <a href="#contact" class="btn btn-primary">Learn More</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section Divider -->
+<div class="section-divider"></div>
+
+<!-- Stats -->
+<section id="stats" class="stats-section">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-item reveal">
+        <i class="fas fa-users"></i>
+        <h3 class="stat-number" data-count="500000">0</h3>
+        <p>Active Contributors</p>
+        <div class="stat-progress">
+          <div class="stat-progress-bar" data-progress="95"></div>
+        </div>
+        <span class="stat-change">+12% vs last month</span>
+      </div>
+      <div class="stat-item reveal">
+        <i class="fas fa-database"></i>
+        <h3 class="stat-number" data-count="2000000">0</h3>
+        <p>Data Points</p>
+        <div class="stat-progress">
+          <div class="stat-progress-bar" data-progress="88"></div>
+        </div>
+        <span class="stat-change">+8% vs last month</span>
+      </div>
+      <div class="stat-item reveal">
+        <i class="fas fa-city"></i>
+        <h3 class="stat-number" data-count="150">0</h3>
+        <p>Cities Covered</p>
+        <div class="stat-progress">
+          <div class="stat-progress-bar" data-progress="75"></div>
+        </div>
+        <span class="stat-change">+5 new cities</span>
+      </div>
+      <div class="stat-item reveal">
+        <i class="fas fa-handshake"></i>
+        <h3 class="stat-number" data-count="50">0</h3>
+        <p>Partners</p>
+        <div class="stat-progress">
+          <div class="stat-progress-bar" data-progress="80"></div>
+        </div>
+        <span class="stat-change">+3 new partners</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section Divider -->
+<div class="section-divider"></div>
+
+<!-- Map -->
+<section id="map" class="map-section">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Explore Live Data</h2>
+      <p class="section-subtitle">Real‑time contributions from around the world</p>
+    </div>
+
+    <div class="map-wrapper reveal">
+      <div class="map-loading skeleton-loader skeleton-image" id="map-loading">
+        <div class="map-loading-spinner">
+          <div class="spinner"></div>
+          <p>Loading map...</p>
+        </div>
+      </div>
+      <div id="mapid" class="interactive-map" style="display: none;"></div>
+      <div class="map-legend">
+        <h4>Legend</h4>
+        <div class="legend-items">
+          <div class="legend-item"><span class="legend-color" style="background: #00d4ff;"></span> Recent contributions</div>
+          <div class="legend-item"><span class="legend-color" style="background: #ff3d81;"></span> Popular locations</div>
+          <div class="legend-item"><span class="legend-color" style="background: #22c55e;"></span> Verified data</div>
+        </div>
+      </div>
+      <div class="map-filters">
+        <button class="map-filter-btn active" data-filter="all">All</button>
+        <button class="map-filter-btn" data-filter="places">Places</button>
+        <button class="map-filter-btn" data-filter="activities">Activities</button>
+        <button class="map-filter-btn" data-filter="stories">Stories</button>
+      </div>
+      <div class="map-controls">
+        <button class="map-btn" id="zoom-in" aria-label="Zoom in" data-tooltip="Zoom in" data-tooltip-position="left"><i class="fas fa-plus"></i></button>
+        <button class="map-btn" id="zoom-out" aria-label="Zoom out" data-tooltip="Zoom out" data-tooltip-position="left"><i class="fas fa-minus"></i></button>
+        <button class="map-btn" id="full-screen" aria-label="Toggle fullscreen" data-tooltip="Fullscreen" data-tooltip-position="left"><i class="fas fa-expand"></i></button>
+      </div>
+      <div class="map-update-indicator">
+        <span class="update-dot"></span>
+        <span>Last updated: <span id="map-last-updated">Just now</span></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section Divider -->
+<div class="section-divider"></div>
+
+<!-- Testimonials -->
+<section id="testimonials" class="testimonials-section">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">What People Say</h2>
+    </div>
+    <div class="testimonials-carousel-wrapper">
+      <div class="testimonials-slider" data-rotate="true" id="testimonials-carousel">
+        <div class="testimonial-item active">
+          <div class="testimonial-rating">
+            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+          </div>
+          <img src="{% static 'images/testimonial-1.png' %}" alt="Rakesh Patel, CEO of LogisticsCo" class="testimonial-avatar" loading="lazy" decoding="async">
+          <div class="testimonial-content">
+            <p>"UrbanVista transformed how we manage deliveries. Real‑time data saves us hours daily."</p>
+            <h4>Rakesh Patel</h4><span>CEO, LogisticsCo</span>
+          </div>
+        </div>
+        <div class="testimonial-item">
+          <div class="testimonial-rating">
+            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+          </div>
+          <img src="{% static 'images/testimonial-2.jpeg' %}" alt="Miraj Sheth, Urban Planner" class="testimonial-avatar" loading="lazy" decoding="async">
+          <div class="testimonial-content">
+            <p>"The community‑driven approach provides insights we couldn't get anywhere else."</p>
+            <h4>Miraj Sheth</h4><span>Urban Planner</span>
+          </div>
+        </div>
+        <div class="testimonial-item">
+          <div class="testimonial-rating">
+            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+          </div>
+          <img src="{% static 'images/testimonial-3.png' %}" alt="Raj Joshi, Active Contributor" class="testimonial-avatar" loading="lazy" decoding="async">
+          <div class="testimonial-content">
+            <p>"Contributing to UrbanVista makes me feel part of something bigger."</p>
+            <h4>Raj Joshi</h4><span>Active Contributor</span>
+          </div>
+        </div>
+      </div>
+      <div class="carousel-controls">
+        <button class="carousel-btn carousel-prev" aria-label="Previous testimonial"><i class="fas fa-chevron-left"></i></button>
+        <div class="carousel-dots">
+          <button class="carousel-dot active" data-slide="0" aria-label="Go to slide 1"></button>
+          <button class="carousel-dot" data-slide="1" aria-label="Go to slide 2"></button>
+          <button class="carousel-dot" data-slide="2" aria-label="Go to slide 3"></button>
+        </div>
+        <button class="carousel-btn carousel-next" aria-label="Next testimonial"><i class="fas fa-chevron-right"></i></button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section Divider -->
+<div class="section-divider"></div>
+
+<!-- QUICK ACCESS FEATURES -->
+<section class="container reveal" id="quick-features" style="padding: 60px 20px;">
+  <div class="section-header" style="text-align: center; margin-bottom: 48px;">
+    <h2 class="section-title">Explore Our Features</h2>
+    <p class="section-subtitle">Discover powerful tools and insights</p>
+  </div>
+  <div class="features-grid" style="max-width: 1200px; margin: 0 auto;">
+    <a href="{% url 'reports:statistics' %}" class="feature-card" data-feature="statistics" style="position: relative; overflow: visible;">
+      <div class="feature-icon" style="background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(255, 61, 129, 0.2));">
+        <i class="fas fa-chart-bar"></i>
+      </div>
+      <h3>Statistics & Analytics</h3>
+      <p>View comprehensive insights, trends, and metrics</p>
+      <span style="position: absolute; top: 12px; right: 12px; padding: 4px 10px; background: linear-gradient(135deg, var(--primary), var(--accent)); color: #fff; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase; box-shadow: 0 2px 8px rgba(0, 212, 255, 0.4);">New</span>
+    </a>
+    
+    <a href="{% url 'reports:leaderboard' %}" class="feature-card" data-feature="leaderboard" style="position: relative; overflow: visible;">
+      <div class="feature-icon" style="background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(255, 61, 129, 0.2));">
+        <i class="fas fa-trophy"></i>
+      </div>
+      <h3>Leaderboard</h3>
+      <p>See top contributors and rankings</p>
+      <span style="position: absolute; top: 12px; right: 12px; padding: 4px 10px; background: linear-gradient(135deg, var(--primary), var(--accent)); color: #fff; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase; box-shadow: 0 2px 8px rgba(0, 212, 255, 0.4);">New</span>
+    </a>
+    
+    {% if user.is_authenticated %}
+    <a href="{% url 'reports:enhanced_dashboard' %}" class="feature-card" data-feature="dashboard" style="position: relative; overflow: visible;">
+      <div class="feature-icon" style="background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(255, 61, 129, 0.2));">
+        <i class="fas fa-dashboard"></i>
+      </div>
+      <h3>My Dashboard</h3>
+      <p>Track your activity and reports</p>
+      <span style="position: absolute; top: 12px; right: 12px; padding: 4px 10px; background: linear-gradient(135deg, var(--primary), var(--accent)); color: #fff; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase; box-shadow: 0 2px 8px rgba(0, 212, 255, 0.4);">New</span>
+    </a>
+    {% endif %}
+    
+    <a href="{% url 'help_center' %}" class="feature-card" data-feature="help" style="position: relative; overflow: visible;">
+      <div class="feature-icon" style="background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(255, 61, 129, 0.2));">
+        <i class="fas fa-question-circle"></i>
+      </div>
+      <h3>Help Center</h3>
+      <p>FAQs, guides, and support</p>
+      <span style="position: absolute; top: 12px; right: 12px; padding: 4px 10px; background: linear-gradient(135deg, var(--primary), var(--accent)); color: #fff; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase; box-shadow: 0 2px 8px rgba(0, 212, 255, 0.4);">New</span>
+    </a>
+  </div>
+</section>
+
+<!-- Section Divider -->
+<div class="section-divider"></div>
+
+<!-- CTA -->
+<section id="get-started" class="cta-section">
+  <div class="container">
+    <div class="cta-wrapper reveal">
+      <div class="cta-content">
+        <div class="cta-urgency">
+          <span class="urgency-badge">Join 12k+ users today</span>
+        </div>
+        <h2>Ready to Get Started?</h2>
+        <p>Join thousands making cities smarter every day</p>
+        <div class="cta-social-proof">
+          <div class="social-proof-item">
+            <i class="fas fa-check-circle"></i>
+            <span>Trusted by 50+ companies</span>
+          </div>
+          <div class="social-proof-item">
+            <i class="fas fa-shield-alt"></i>
+            <span>100% secure & verified</span>
+          </div>
+        </div>
+      </div>
+      <div class="cta-buttons">
+        <a href="{% url 'account_signup' %}" class="btn btn-white btn-lg">Sign Up Free</a>
+        <a href="#contact" class="btn btn-outline-white">Contact Sales</a>
+        <a href="#how-it-works" class="btn btn-outline-white">Watch Demo</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section Divider -->
+<div class="section-divider"></div>
+
+<!-- Contact -->
+<section id="contact" class="contact-section">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Get in Touch</h2>
+      <p class="section-subtitle">We'd love to hear from you</p>
+    </div>
+
+    <div class="contact-wrapper">
+      <div class="contact-info">
+        <div class="info-item"><i class="fas fa-envelope"></i><div><h4>Email</h4><a href="mailto:info@urbanvista.com">info@urbanvista.com</a></div></div>
+        <div class="info-item"><i class="fas fa-phone"></i><div><h4>Phone</h4><a href="tel:+918140501069">+91 8140501069</a></div></div>
+        <div class="info-item"><i class="fas fa-map-marker-alt"></i><div><h4>Office</h4><p>Ahmedabad, India</p></div></div>
+      </div>
+
+      <form id="contact-form" class="contact-form" method="POST" action="" data-autosave="true">
+        {% csrf_token %}
+        <div class="row">
+          <div class="col">
+            <div class="form-field-wrapper">
+              <i class="form-icon fas fa-user"></i>
+              <input type="text" name="name" id="contact-name" placeholder="Your Name" required autocomplete="name" data-validate="name">
+              <span class="field-error"></span>
+            </div>
+          </div>
+          <div class="col">
+            <div class="form-field-wrapper">
+              <i class="form-icon fas fa-envelope"></i>
+              <input type="email" name="email" id="contact-email" placeholder="Your Email" required autocomplete="email" data-validate="email">
+              <span class="field-error"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-field-wrapper">
+          <i class="form-icon fas fa-tag"></i>
+          <select name="subject" id="contact-subject" required data-validate="select">
+            <option value="" selected disabled>Select Subject</option>
+            <option value="General">General</option>
+            <option value="Support">Support</option>
+            <option value="Partnership">Partnership</option>
+            <option value="Careers">Careers</option>
+            <option value="Feedback">Feedback</option>
+            <option value="Other">Other</option>
+          </select>
+          <span class="field-error"></span>
+        </div>
+
+        <div class="form-field-wrapper">
+          <i class="form-icon fas fa-comment-alt"></i>
+          <textarea name="message" id="contact-message" rows="5" placeholder="Your Message" required data-validate="message" maxlength="1000"></textarea>
+          <div class="textarea-footer">
+            <span class="char-counter"><span id="char-count">0</span>/1000</span>
+            <span class="field-error"></span>
+          </div>
+        </div>
+
+        <button type="submit" id="contact-submit" class="btn btn-primary">
+          <span class="btn-text">Send Message</span>
+          <span class="btn-success" style="display: none;">
+            <i class="fas fa-check"></i> Sent!
+          </span>
+        </button>
+        <div id="contact-feedback" class="form-feedback" role="status" aria-live="polite"></div>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script defer src="{% static 'js/home.js' %}"></script>
+<script>
+  // Preload critical resources
+  if ('requestIdleCallback' in window) {
+    requestIdleCallback(() => {
+      // Preload images
+      const images = document.querySelectorAll('img[loading="lazy"]');
+      images.forEach(img => {
+        if (img.dataset.src) {
+          const link = document.createElement('link');
+          link.rel = 'preload';
+          link.as = 'image';
+          link.href = img.dataset.src;
+          document.head.appendChild(link);
+        }
+      });
+    });
+  }
+</script>
+{% endblock %}

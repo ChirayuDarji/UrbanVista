@@ -1,0 +1,497 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ project.title }} — UrbanVista{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+<link rel="stylesheet" href="{% static 'css/print.css' %}" media="print">
+<style>
+.project-detail-page {
+    padding: 40px 20px;
+    background: var(--uv-c-surface-1, var(--surface, #121826));
+    min-height: 100vh;
+}
+
+.project-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.project-header {
+    margin-bottom: 32px;
+}
+
+.project-header h1 {
+    font-size: clamp(28px, 4vw, 40px);
+    margin-bottom: 16px;
+    color: var(--text);
+    font-weight: 800;
+}
+
+.project-meta-header {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+    align-items: center;
+}
+
+.project-status-badge {
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.project-status-badge.planned { background: rgba(156, 163, 175, 0.2); color: #9ca3af; }
+.project-status-badge.approved { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+.project-status-badge.in_progress { background: rgba(14, 165, 233, 0.2); color: #0ea5e9; }
+.project-status-badge.on_hold { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+.project-status-badge.completed { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
+.project-status-badge.cancelled { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+
+.project-featured-image {
+    width: 100%;
+    max-height: 500px;
+    object-fit: cover;
+    border-radius: 16px;
+    margin-bottom: 32px;
+}
+
+.project-content-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 32px;
+    margin-bottom: 32px;
+}
+
+.project-main {
+    background: var(--elev);
+    padding: 32px;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+}
+
+.project-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.sidebar-card {
+    background: var(--elev);
+    padding: 24px;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+}
+
+.sidebar-card h3 {
+    font-size: 18px;
+    margin-bottom: 16px;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sidebar-card h3 i {
+    color: var(--primary);
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.info-item:last-child {
+    border-bottom: none;
+}
+
+.info-label {
+    color: var(--muted);
+    font-weight: 600;
+}
+
+.info-value {
+    color: var(--text);
+    text-align: right;
+}
+
+.progress-bar-wrapper {
+    margin-top: 16px;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: var(--surface);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    transition: width 0.3s ease;
+}
+
+.updates-section {
+    background: var(--elev);
+    padding: 32px;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    margin-bottom: 32px;
+}
+
+.updates-section h2 {
+    font-size: 24px;
+    margin-bottom: 24px;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.updates-section h2 i {
+    color: var(--primary);
+}
+
+.update-item {
+    padding: 20px;
+    background: var(--surface);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    margin-bottom: 16px;
+}
+
+.update-item:last-child {
+    margin-bottom: 0;
+}
+
+.update-date {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 8px;
+}
+
+.update-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 8px;
+}
+
+.update-content {
+    color: var(--muted);
+    line-height: 1.7;
+}
+
+.documents-section {
+    background: var(--elev);
+    padding: 32px;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+}
+
+.documents-section h2 {
+    font-size: 24px;
+    margin-bottom: 24px;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.documents-section h2 i {
+    color: var(--primary);
+}
+
+.document-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    background: var(--surface);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    margin-bottom: 12px;
+}
+
+.document-item:last-child {
+    margin-bottom: 0;
+}
+
+.document-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.document-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--primary) 20%, transparent);
+    display: grid;
+    place-items: center;
+    color: var(--primary);
+}
+
+.action-buttons {
+    display: flex;
+    gap: 12px;
+    margin-top: 32px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 12px 24px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: #fff;
+    border: none;
+}
+
+.btn-primary:hover {
+    background: color-mix(in srgb, var(--primary) 85%, #000);
+    transform: translateY(-2px);
+}
+
+.btn-outline {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
+}
+
+.btn-outline:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+@media (max-width: 968px) {
+    .project-content-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="project-detail-page">
+    <div class="project-container">
+        <div class="project-header">
+            <div class="project-meta-header">
+                {% if project.category %}
+                <span style="padding: 8px 16px; background: color-mix(in srgb, var(--primary) 20%, transparent); border-radius: 12px; color: var(--primary); font-weight: 600; font-size: 14px;">
+                    {% if project.category.icon %}<i class="{{ project.category.icon }}"></i>{% endif %}
+                    {{ project.category.name }}
+                </span>
+                {% endif %}
+                <span class="project-status-badge {{ project.status }}">{{ project.get_status_display }}</span>
+                <span style="color: var(--muted); font-size: 14px;">
+                    <i class="fas fa-eye"></i> {{ project.views_count }} views
+                </span>
+            </div>
+            <h1>{{ project.title }}</h1>
+            <p style="color: var(--muted); font-size: 18px; line-height: 1.6;">{{ project.short_description|default:project.description|truncatewords:30 }}</p>
+        </div>
+
+        {% if project.featured_image %}
+        <img src="{{ project.featured_image.url }}" alt="{{ project.title }}" class="project-featured-image" loading="lazy">
+        {% endif %}
+
+        <div class="project-content-grid">
+            <!-- Main Content -->
+            <div class="project-main">
+                <h2 style="font-size: 24px; margin-bottom: 16px; color: var(--text);">Project Details</h2>
+                <div style="color: var(--muted); line-height: 1.8; white-space: pre-line;">{{ project.description }}</div>
+                
+                {% if project.benefits %}
+                <div style="margin-top: 32px;">
+                    <h3 style="font-size: 20px; margin-bottom: 12px; color: var(--text);">
+                        <i class="fas fa-check-circle" style="color: var(--primary); margin-right: 8px;"></i>
+                        Benefits
+                    </h3>
+                    <p style="color: var(--muted); line-height: 1.8; white-space: pre-line;">{{ project.benefits }}</p>
+                </div>
+                {% endif %}
+                
+                {% if project.challenges %}
+                <div style="margin-top: 32px;">
+                    <h3 style="font-size: 20px; margin-bottom: 12px; color: var(--text);">
+                        <i class="fas fa-exclamation-triangle" style="color: var(--warning, #f59e0b); margin-right: 8px;"></i>
+                        Challenges
+                    </h3>
+                    <p style="color: var(--muted); line-height: 1.8; white-space: pre-line;">{{ project.challenges }}</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Sidebar -->
+            <div class="project-sidebar">
+                <!-- Progress -->
+                <div class="sidebar-card">
+                    <h3><i class="fas fa-tasks"></i> Progress</h3>
+                    <div class="progress-bar-wrapper">
+                        <div class="progress-bar">
+                            <div class="progress-bar-fill" style="width: {{ project.progress_percentage }}%;"></div>
+                        </div>
+                        <div style="text-align: center; font-size: 24px; font-weight: 700; color: var(--primary);">
+                            {{ project.progress_percentage }}%
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project Info -->
+                <div class="sidebar-card">
+                    <h3><i class="fas fa-info-circle"></i> Project Information</h3>
+                    <div class="info-item">
+                        <span class="info-label">Location:</span>
+                        <span class="info-value">{{ project.location }}</span>
+                    </div>
+                    {% if project.ward %}
+                    <div class="info-item">
+                        <span class="info-label">Ward:</span>
+                        <span class="info-value">{{ project.ward }}</span>
+                    </div>
+                    {% endif %}
+                    {% if project.department %}
+                    <div class="info-item">
+                        <span class="info-label">Department:</span>
+                        <span class="info-value">{{ project.department.name }}</span>
+                    </div>
+                    {% endif %}
+                    {% if project.start_date %}
+                    <div class="info-item">
+                        <span class="info-label">Start Date:</span>
+                        <span class="info-value">{{ project.start_date|date:"M d, Y" }}</span>
+                    </div>
+                    {% endif %}
+                    {% if project.expected_completion_date %}
+                    <div class="info-item">
+                        <span class="info-label">Expected Completion:</span>
+                        <span class="info-value">{{ project.expected_completion_date|date:"M d, Y" }}</span>
+                    </div>
+                    {% endif %}
+                    {% if project.estimated_budget %}
+                    <div class="info-item">
+                        <span class="info-label">Budget:</span>
+                        <span class="info-value">₹{{ project.estimated_budget|floatformat:0 }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Contact -->
+                {% if project.contact_email or project.contact_phone %}
+                <div class="sidebar-card">
+                    <h3><i class="fas fa-phone"></i> Contact</h3>
+                    {% if project.project_manager %}
+                    <div class="info-item">
+                        <span class="info-label">Manager:</span>
+                        <span class="info-value">{{ project.project_manager }}</span>
+                    </div>
+                    {% endif %}
+                    {% if project.contact_email %}
+                    <div class="info-item">
+                        <span class="info-label">Email:</span>
+                        <span class="info-value"><a href="mailto:{{ project.contact_email }}" style="color: var(--primary);">{{ project.contact_email }}</a></span>
+                    </div>
+                    {% endif %}
+                    {% if project.contact_phone %}
+                    <div class="info-item">
+                        <span class="info-label">Phone:</span>
+                        <span class="info-value"><a href="tel:{{ project.contact_phone }}" style="color: var(--primary);">{{ project.contact_phone }}</a></span>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Updates -->
+        {% if updates %}
+        <div class="updates-section">
+            <h2><i class="fas fa-newspaper"></i> Project Updates</h2>
+            {% for update in updates %}
+            <div class="update-item">
+                <div class="update-date">{{ update.created_at|date:"F d, Y" }}</div>
+                <h3 class="update-title">{{ update.title }}</h3>
+                <p class="update-content">{{ update.content|linebreaks }}</p>
+                {% if update.progress_percentage %}
+                <div style="margin-top: 12px; font-size: 14px; color: var(--primary); font-weight: 600;">
+                    Progress: {{ update.progress_percentage }}%
+                </div>
+                {% endif %}
+                {% if update.image %}
+                <img src="{{ update.image.url }}" alt="{{ update.title }}" style="width: 100%; max-height: 300px; object-fit: cover; border-radius: 8px; margin-top: 12px;" loading="lazy">
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Documents -->
+        {% if documents %}
+        <div class="documents-section">
+            <h2><i class="fas fa-file-alt"></i> Project Documents</h2>
+            {% for document in documents %}
+            <div class="document-item">
+                <div class="document-info">
+                    <div class="document-icon">
+                        <i class="fas fa-file-pdf"></i>
+                    </div>
+                    <div>
+                        <div style="font-weight: 600; color: var(--text);">{{ document.title }}</div>
+                        {% if document.file_type %}
+                        <div style="font-size: 12px; color: var(--muted);">{{ document.file_type }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <a href="{{ document.file.url }}" target="_blank" class="btn btn-outline" style="padding: 8px 16px; font-size: 14px;">
+                    <i class="fas fa-download"></i> Download
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Action Buttons -->
+        {% if user.is_staff %}
+        <div class="action-buttons">
+            <a href="{% url 'projects:edit' project.slug %}" class="btn btn-primary">
+                <i class="fas fa-edit"></i> Edit Project
+            </a>
+            <a href="{% url 'projects:update_add' project.slug %}" class="btn btn-outline">
+                <i class="fas fa-plus"></i> Add Update
+            </a>
+            <a href="{% url 'projects:document_add' project.slug %}" class="btn btn-outline">
+                <i class="fas fa-file-upload"></i> Add Document
+            </a>
+            <a href="{% url 'projects:delete' project.slug %}" class="btn btn-outline" style="color: var(--error, #ef4444); border-color: var(--error);" onclick="return confirm('Are you sure you want to delete this project?');">
+                <i class="fas fa-trash"></i> Delete
+            </a>
+        </div>
+        {% endif %}
+
+        <div style="margin-top: 32px;">
+            <a href="{% url 'projects:list' %}" class="btn btn-outline">
+                <i class="fas fa-arrow-left"></i> Back to Projects
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
+

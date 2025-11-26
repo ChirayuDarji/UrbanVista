@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Submit Report{% endblock %}
+
+{% block content %}
+<h1>Submit a Report</h1>
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  {{ form.non_field_errors }}
+  {{ form.as_p }}
+  <button type="submit">Submit</button>
+</form>
+
+<p style="margin-top:1rem;">
+  <a href="{% url 'reports:my_reports' %}">Go to My Reports</a>
+</p>
+{% endblock %}

@@ -1,0 +1,213 @@
+{% load static %}
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8">
+    <title>{% block title %}UrbanVista — Company-grade Django{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+
+    {% block meta %}
+    <meta name="description" content="A modern, urban-styled Django app with a polished UI.">
+    <meta property="og:title" content="Urban Django App">
+    <meta property="og:description" content="Company-ready base with beautiful UI, accessible patterns, and responsive design.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.build_absolute_uri|default_if_none:'' }}">
+    <meta property="og:image" content="{% static 'images/logo.png' %}">
+    <meta name="theme-color" content="#0f1115">
+    <link rel="canonical" href="{{ request.build_absolute_uri|default_if_none:'' }}">
+    {% endblock %}
+
+    <link rel="icon" href="{% static 'images/logo.png' %}" type="image/png">
+    <link rel="apple-touch-icon" href="{% static 'images/logo.png' %}">
+    <link rel="manifest" href="{% static 'site.webmanifest' %}">
+
+    <script>
+      (function () {
+        const KEY = 'urbanvista-theme';
+        const root = document.documentElement;
+        const mq = window.matchMedia('(prefers-color-scheme: dark)');
+        function ensureThemeMeta() {
+          let m = document.querySelector('meta[name="theme-color"]');
+          if (!m) { m = document.createElement('meta'); m.name = 'theme-color'; document.head.appendChild(m); }
+          return m;
+        }
+        const metaTheme = ensureThemeMeta();
+        function getSaved() {
+          try {
+            const v = localStorage.getItem(KEY);
+            return v === 'light' || v === 'dark' || v === 'system' ? v : 'system';
+          } catch { return 'system'; }
+        }
+        function resolve(mode) { return mode === 'system' ? (mq.matches ? 'dark' : 'light') : mode; }
+        function apply(mode) {
+          const t = resolve(mode);
+          root.setAttribute('data-theme', t);
+          root.style.colorScheme = t;
+          metaTheme.setAttribute('content', t === 'dark' ? '#0f1115' : '#ffffff');
+        }
+        apply(getSaved());
+        const onPrefChange = () => { if (getSaved() === 'system') apply('system'); };
+        if (mq.addEventListener) mq.addEventListener('change', onPrefChange);
+        else if (mq.addListener) mq.addListener(onPrefChange);
+        window.setTheme = function (mode) { try { localStorage.setItem(KEY, mode); } catch {} apply(mode); };
+        window.toggleTheme = function () {
+          const cur = root.getAttribute('data-theme') || 'dark';
+          const next = cur === 'dark' ? 'light' : 'dark';
+          try { localStorage.setItem(KEY, next); } catch {}
+          root.classList.add('theme-animate'); apply(next);
+          setTimeout(() => root.classList.remove('theme-animate'), 280);
+          return next;
+        };
+      })();
+    </script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="{% static 'css/app.css' %}">
+    <link rel="stylesheet" href="{% static 'css/nav.css' %}">
+    <link rel="stylesheet" href="{% static 'css/animation.css' %}">
+
+    {% block extra_css %}{% endblock %}
+    {% block head_extra %}{% endblock %}
+  </head>
+
+  <body class="{% block body_class %}{% endblock %}">
+    <a class="skip-link" href="#main">Skip to content</a>
+
+{% block navbar %}{% include "nav.html" %}{% endblock %}
+
+    <main id="main" class="{% block main_class %}container{% endblock %}" role="main">
+      {% if messages %}
+        <ul class="toasts" id="toast-container" aria-live="polite" aria-atomic="true">
+          {% for message in messages %}
+            <li class="toast toast-{{ message.tags|default:'info' }}"
+                role="{% if 'error' in message.tags or 'danger' in message.tags or 'warning' in message.tags %}alert{% else %}status{% endif %}"
+                aria-live="{% if 'error' in message.tags or 'danger' in message.tags or 'warning' in message.tags %}assertive{% else %}polite{% endif %}">
+              <div class="toast-body">{{ message }}</div>
+              <button class="toast-close" aria-label="Dismiss" data-dismiss="toast">&times;</button>
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+
+      {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+      <div class="container footer-inner">
+        <!-- Footer Top Section -->
+        <div class="footer-top">
+          <!-- Brand Column -->
+          <div class="footer-column footer-brand-col">
+            <div class="footer-brand">
+              <img src="{% static 'images/logo.png' %}" alt="UrbanVista logo" class="logo" decoding="async" loading="lazy">
+              <div>
+                <div class="brand-text">UrbanVista</div>
+                <div class="muted" style="margin-top: 8px; font-size: 14px; line-height: 1.6;">Empowering citizens to build better cities through transparency and collaboration.</div>
+              </div>
+            </div>
+            <div class="footer-social" style="margin-top: 24px; display: flex; gap: 12px;">
+              <a href="#" aria-label="Facebook" class="social-link" style="width: 40px; height: 40px; border-radius: 50%; background: var(--elev); border: 1px solid var(--border); display: grid; place-items: center; color: var(--text); text-decoration: none; transition: all 0.3s ease;">
+                <i class="fab fa-facebook-f"></i>
+              </a>
+              <a href="#" aria-label="Twitter" class="social-link" style="width: 40px; height: 40px; border-radius: 50%; background: var(--elev); border: 1px solid var(--border); display: grid; place-items: center; color: var(--text); text-decoration: none; transition: all 0.3s ease;">
+                <i class="fab fa-twitter"></i>
+              </a>
+              <a href="#" aria-label="LinkedIn" class="social-link" style="width: 40px; height: 40px; border-radius: 50%; background: var(--elev); border: 1px solid var(--border); display: grid; place-items: center; color: var(--text); text-decoration: none; transition: all 0.3s ease;">
+                <i class="fab fa-linkedin-in"></i>
+              </a>
+              <a href="#" aria-label="Instagram" class="social-link" style="width: 40px; height: 40px; border-radius: 50%; background: var(--elev); border: 1px solid var(--border); display: grid; place-items: center; color: var(--text); text-decoration: none; transition: all 0.3s ease;">
+                <i class="fab fa-instagram"></i>
+              </a>
+            </div>
+          </div>
+
+          <!-- Quick Links Column -->
+          <div class="footer-column">
+            <h3 class="footer-heading">Quick Links</h3>
+            <ul class="footer-list">
+              <li><a href="{% url 'home' %}"><i class="fas fa-home"></i> Home</a></li>
+              <li><a href="{% url 'about' %}"><i class="fas fa-info-circle"></i> About</a></li>
+              <li><a href="{% url 'reports:report_list' %}"><i class="fas fa-clipboard-list"></i> Reports</a></li>
+              <li><a href="{% url 'projects:list' %}"><i class="fas fa-city"></i> Projects</a></li>
+              <li><a href="{% url 'news:list' %}"><i class="fas fa-newspaper"></i> News</a></li>
+            </ul>
+          </div>
+
+          <!-- Features Column -->
+          <div class="footer-column">
+            <h3 class="footer-heading">Features</h3>
+            <ul class="footer-list">
+              <li><a href="{% url 'reports:statistics' %}"><i class="fas fa-chart-bar"></i> Statistics</a></li>
+              <li><a href="{% url 'reports:leaderboard' %}"><i class="fas fa-trophy"></i> Leaderboard</a></li>
+              {% if user.is_authenticated %}
+              <li><a href="{% url 'reports:enhanced_dashboard' %}"><i class="fas fa-dashboard"></i> Dashboard</a></li>
+              {% endif %}
+              <li><a href="{% url 'help_center' %}"><i class="fas fa-question-circle"></i> Help Center</a></li>
+              <li><a href="{% url 'freecontribution:experience_home' %}"><i class="fas fa-share-alt"></i> Contribute</a></li>
+            </ul>
+          </div>
+
+          <!-- Contact Column -->
+          <div class="footer-column">
+            <h3 class="footer-heading">Contact</h3>
+            <ul class="footer-list">
+              <li><a href="mailto:info@urbanvista.com"><i class="fas fa-envelope"></i> info@urbanvista.com</a></li>
+              <li><a href="tel:+918140501069"><i class="fas fa-phone"></i> +91 8140501069</a></li>
+              <li style="color: var(--muted); margin-top: 16px;">
+                <i class="fas fa-map-marker-alt"></i> 
+                <span style="margin-left: 8px;">Ahmedabad, Gujarat, India</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Footer Bottom -->
+        <div class="footer-bottom">
+          <div class="footer-meta">
+            <p style="margin: 0; color: var(--muted); font-size: 14px;">
+              © {% now "Y" %} UrbanVista. All rights reserved.
+            </p>
+          </div>
+          <div class="footer-legal">
+            <a href="{% url 'about' %}" style="color: var(--muted); text-decoration: none; font-size: 14px; margin-left: 16px;">Privacy Policy</a>
+            <a href="{% url 'about' %}" style="color: var(--muted); text-decoration: none; font-size: 14px; margin-left: 16px;">Terms of Service</a>
+            <a href="{% url 'help_center' %}" style="color: var(--muted); text-decoration: none; font-size: 14px; margin-left: 16px;">Support</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script defer src="{% static 'js/app.js' %}"></script>
+    <script defer src="{% static 'js/ajax-helper.js' %}"></script>
+    <script defer src="{% static 'js/tooltips.js' %}"></script>
+    <script defer src="{% static 'js/keyboard-shortcuts.js' %}"></script>
+    <script defer src="{% static 'js/pagination.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+    {% block analytics %}{% endblock %}
+
+    <noscript><style>.mobile-menu{display:none !important}</style></noscript>
+  </body>
+  <button id="backToTop" class="back-to-top" aria-label="Back to top" title="Back to top">
+    <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5l7 7-1.41 1.41L13 9.83V20h-2V9.83l-4.59 4.58L5 12z" fill="currentColor"/></svg>
+  </button>
+
+  <script>
+    (function(){
+      const backBtn = document.getElementById('backToTop')
+      if (!backBtn) return
+      const onScroll = () => {
+        if (window.scrollY > 400) backBtn.classList.add('show')
+        else backBtn.classList.remove('show')
+      }
+      window.addEventListener('scroll', onScroll, { passive: true })
+      backBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }))
+      onScroll()
+    })()
+  </script>
+</html>

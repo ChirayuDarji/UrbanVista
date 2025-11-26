@@ -1,0 +1,298 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Civic Reports{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/reports/reports-all.css' %}">
+<link rel="stylesheet" href="{% static 'css/FreeContribution/fc-improvements.css' %}">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+<style>
+#reportsMap {
+  width: 100%;
+  height: 420px;
+  border-radius: 12px;
+  border: 1px solid var(--border, #ccc);
+  background: var(--surface, #fff);
+  position: relative;
+  z-index: 1;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Scroll Progress Bar -->
+<div class="scroll-progress" id="scroll-progress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+  <div class="scroll-progress-bar"></div>
+</div>
+
+<!-- Floating CTA -->
+<div class="floating-cta" id="floating-cta">
+  <a href="{% url 'reports:report_create' %}" class="btn btn-primary">
+    <i class="fas fa-plus-circle"></i>
+    <span>Submit Report</span>
+  </a>
+</div>
+
+<!-- Section Navigation Dots -->
+<nav class="section-nav-dots" aria-label="Page sections">
+  <a href="#hero" class="nav-dot active" data-section="hero" aria-label="Go to hero section">
+    <span class="dot-tooltip">Hero</span>
+  </a>
+  <a href="#how-to" class="nav-dot" data-section="how-to" aria-label="Go to how to section">
+    <span class="dot-tooltip">How To</span>
+  </a>
+  <a href="#map-section" class="nav-dot" data-section="map-section" aria-label="Go to map section">
+    <span class="dot-tooltip">Map</span>
+  </a>
+  <a href="#reports" class="nav-dot" data-section="reports" aria-label="Go to reports section">
+    <span class="dot-tooltip">Reports</span>
+  </a>
+</nav>
+
+<!-- HERO -->
+<section class="fc-hero reveal" id="hero">
+  <img src="{% static 'images/civic-hero.jpg' %}" alt="Ahmedabad City" style="width:100%;max-height:340px;object-fit:cover;object-position:center;">
+  <div class="overlay"></div>
+  <div class="content container">
+    <h1>Report Civic Issues in Ahmedabad</h1>
+    <p class="lead">Help make our city better. Report potholes, garbage, water leaks, and more.</p>
+    <div class="cta">
+      <a class="btn btn-primary btn-lg" href="{% url 'reports:report_create' %}">Submit New Report</a>
+    </div>
+  </div>
+</section>
+
+<!-- Section Divider -->
+<div class="section-divider"></div>
+
+<!-- HOW TO REPORT -->
+<section class="container reveal" id="how-to" style="padding: 18px 0 12px;">
+  <div class="how-to-contribute">
+    <div class="how-to-header">
+      <i class="fas fa-lightbulb"></i>
+      <h2>How to Report an Issue</h2>
+    </div>
+    <div class="how-to-steps">
+      <div class="step-item" data-step="1">
+        <div class="step-number">1</div>
+        <div class="step-content">
+          <h3>Click Submit New Report</h3>
+          <p>Start by clicking the button above to create your report.</p>
+        </div>
+      </div>
+      <div class="step-item" data-step="2">
+        <div class="step-number">2</div>
+        <div class="step-content">
+          <h3>Fill in the Details</h3>
+          <p>Add issue type, location, description, and upload a photo if possible.</p>
+        </div>
+      </div>
+      <div class="step-item" data-step="3">
+        <div class="step-number">3</div>
+        <div class="step-content">
+          <h3>Submit & Track</h3>
+          <p>Authorities will review and resolve your report. Track progress below.</p>
+        </div>
+      </div>
+    </div>
+    <p class="muted how-to-footer">Or browse your submitted reports below.</p>
+  </div>
+</section>
+
+<!-- Section Divider -->
+<div class="section-divider"></div>
+
+<!-- QUICK ACCESS FEATURES -->
+<section class="container reveal" id="quick-features" style="padding: 40px 0;">
+  <div class="section-head" style="text-align: center; margin-bottom: 32px;">
+    <h2 style="font-size: clamp(24px, 4vw, 32px); margin-bottom: 12px;">Explore More Features</h2>
+    <p class="section-subtitle muted">Discover insights, rankings, and helpful resources</p>
+  </div>
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; max-width: 1000px; margin: 0 auto;">
+    <a href="{% url 'reports:statistics' %}" class="feature-quick-btn" style="display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 24px; background: var(--elev, #151c2e); border: 2px solid var(--border, #273043); border-radius: 16px; text-decoration: none; transition: all 0.3s ease; position: relative; overflow: hidden;">
+      <div style="width: 64px; height: 64px; border-radius: 16px; background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(255, 61, 129, 0.2)); display: grid; place-items: center; font-size: 28px; color: var(--primary, #0ea5e9);">
+        <i class="fas fa-chart-bar"></i>
+      </div>
+      <h3 style="margin: 0; font-size: 18px; color: var(--text, #e9edf6); font-weight: 700;">Statistics</h3>
+      <p style="margin: 0; font-size: 14px; color: var(--muted, #a3adc2); text-align: center;">View analytics & insights</p>
+      <span style="position: absolute; top: 8px; right: 8px; padding: 4px 8px; background: var(--primary, #0ea5e9); color: #fff; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase;">New</span>
+    </a>
+    
+    <a href="{% url 'reports:leaderboard' %}" class="feature-quick-btn" style="display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 24px; background: var(--elev, #151c2e); border: 2px solid var(--border, #273043); border-radius: 16px; text-decoration: none; transition: all 0.3s ease; position: relative; overflow: hidden;">
+      <div style="width: 64px; height: 64px; border-radius: 16px; background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(255, 61, 129, 0.2)); display: grid; place-items: center; font-size: 28px; color: var(--primary, #0ea5e9);">
+        <i class="fas fa-trophy"></i>
+      </div>
+      <h3 style="margin: 0; font-size: 18px; color: var(--text, #e9edf6); font-weight: 700;">Leaderboard</h3>
+      <p style="margin: 0; font-size: 14px; color: var(--muted, #a3adc2); text-align: center;">Top contributors</p>
+      <span style="position: absolute; top: 8px; right: 8px; padding: 4px 8px; background: var(--primary, #0ea5e9); color: #fff; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase;">New</span>
+    </a>
+    
+    {% if user.is_authenticated %}
+    <a href="{% url 'reports:enhanced_dashboard' %}" class="feature-quick-btn" style="display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 24px; background: var(--elev, #151c2e); border: 2px solid var(--border, #273043); border-radius: 16px; text-decoration: none; transition: all 0.3s ease; position: relative; overflow: hidden;">
+      <div style="width: 64px; height: 64px; border-radius: 16px; background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(255, 61, 129, 0.2)); display: grid; place-items: center; font-size: 28px; color: var(--primary, #0ea5e9);">
+        <i class="fas fa-dashboard"></i>
+      </div>
+      <h3 style="margin: 0; font-size: 18px; color: var(--text, #e9edf6); font-weight: 700;">My Dashboard</h3>
+      <p style="margin: 0; font-size: 14px; color: var(--muted, #a3adc2); text-align: center;">Your activity overview</p>
+      <span style="position: absolute; top: 8px; right: 8px; padding: 4px 8px; background: var(--primary, #0ea5e9); color: #fff; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase;">New</span>
+    </a>
+    {% endif %}
+    
+    <a href="{% url 'help_center' %}" class="feature-quick-btn" style="display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 24px; background: var(--elev, #151c2e); border: 2px solid var(--border, #273043); border-radius: 16px; text-decoration: none; transition: all 0.3s ease; position: relative; overflow: hidden;">
+      <div style="width: 64px; height: 64px; border-radius: 16px; background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(255, 61, 129, 0.2)); display: grid; place-items: center; font-size: 28px; color: var(--primary, #0ea5e9);">
+        <i class="fas fa-question-circle"></i>
+      </div>
+      <h3 style="margin: 0; font-size: 18px; color: var(--text, #e9edf6); font-weight: 700;">Help Center</h3>
+      <p style="margin: 0; font-size: 14px; color: var(--muted, #a3adc2); text-align: center;">FAQs & guides</p>
+      <span style="position: absolute; top: 8px; right: 8px; padding: 4px 8px; background: var(--primary, #0ea5e9); color: #fff; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase;">New</span>
+    </a>
+  </div>
+</section>
+
+<style>
+.feature-quick-btn:hover {
+  transform: translateY(-4px);
+  border-color: var(--primary, #0ea5e9) !important;
+  box-shadow: 0 12px 32px rgba(0, 212, 255, 0.2);
+}
+
+@media (max-width: 768px) {
+  #quick-features > div {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  #quick-features > div {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+
+<!-- Section Divider -->
+<div class="section-divider"></div>
+
+<!-- MAP -->
+<section class="container reveal" id="map-section">
+  <header class="section-head">
+    <h2>Reported Issues Map</h2>
+    <p class="section-subtitle muted">View all reported issues on the map</p>
+  </header>
+  <div class="fc-map-wrap">
+    <div class="map-loading" id="map-loading">
+      <div class="spinner"></div>
+      <span>Loading map...</span>
+    </div>
+    <div id="reportsMap" style="display: none;"></div>
+  </div>
+</section>
+
+<!-- Section Divider -->
+<div class="section-divider"></div>
+
+<!-- USER'S REPORTS LIST -->
+<section class="container reveal" id="reports" style="padding: 16px 0 8px;">
+  <header class="section-head">
+    <div>
+      <h2>My Reports</h2>
+      <p class="section-subtitle muted">Track the status of your submitted reports</p>
+    </div>
+    <a class="btn btn-primary" href="{% url 'reports:report_create' %}">
+      <i class="fas fa-plus"></i>
+      <span>Submit New Report</span>
+    </a>
+  </header>
+  {% if reports %}
+    <div class="grid">
+      {% for report in reports %}
+        {% include "reports/report_status_card.html" with report=report %}
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="alert alert-info text-center" role="alert">
+      No reports submitted yet.
+    </div>
+  {% endif %}
+</section>
+
+<!-- Mobile Bottom Navigation -->
+<nav class="mobile-bottom-nav" id="mobile-bottom-nav" aria-label="Mobile navigation">
+  <a href="#hero" class="mobile-nav-item active" data-section="hero">
+    <i class="fas fa-home"></i>
+    <span>Home</span>
+  </a>
+  <a href="#map-section" class="mobile-nav-item" data-section="map-section">
+    <i class="fas fa-map"></i>
+    <span>Map</span>
+  </a>
+  <a href="{% url 'reports:report_create' %}" class="mobile-nav-item mobile-nav-create">
+    <i class="fas fa-plus-circle"></i>
+    <span>Report</span>
+  </a>
+  <a href="#reports" class="mobile-nav-item" data-section="reports">
+    <i class="fas fa-list"></i>
+    <span>My Reports</span>
+  </a>
+  <a href="#how-to" class="mobile-nav-item" data-section="how-to">
+    <i class="fas fa-info-circle"></i>
+    <span>How To</span>
+  </a>
+</nav>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin="" defer></script>
+<script src="{% static 'js/FreeContribution/fc-home.js' %}" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Initialize scroll progress, floating CTA, section nav, mobile nav
+  if (typeof initScrollProgress === 'function') initScrollProgress();
+  if (typeof initFloatingCTA === 'function') initFloatingCTA();
+  if (typeof initSectionNavDots === 'function') initSectionNavDots();
+  if (typeof initMobileBottomNav === 'function') initMobileBottomNav();
+  if (typeof initScrollReveal === 'function') initScrollReveal();
+  
+  // Initialize map
+  const mapLoading = document.getElementById('map-loading');
+  const mapDiv = document.getElementById('reportsMap');
+  
+  function initReportsMap() {
+    if (typeof L === 'undefined') {
+      setTimeout(initReportsMap, 100);
+      return;
+    }
+    
+    if (mapDiv && {% if reports %}true{% else %}false{% endif %}) {
+      const map = L.map('reportsMap', { scrollWheelZoom: true });
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(map);
+      
+      map.setView([23.0225, 72.5714], 12);
+      
+      map.whenReady(() => {
+        if (mapLoading) mapLoading.style.display = 'none';
+        mapDiv.style.display = 'block';
+        map.invalidateSize();
+      });
+      
+      {% if reports %}
+        {% for report in reports %}
+          {% if report.latitude and report.longitude %}
+            L.marker([{{ report.latitude }}, {{ report.longitude }}])
+              .addTo(map)
+              .bindPopup(`<b>{{ report.get_issue_type_display }}</b><br>{{ report.location|escapejs }}`);
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+    } else if (mapLoading) {
+      mapLoading.style.display = 'none';
+    }
+  }
+  
+  initReportsMap();
+});
+</script>
+{% endblock %}

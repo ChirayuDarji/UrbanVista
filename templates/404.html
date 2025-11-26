@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Page not found - UrbanVista{% endblock %}
+{% block extra_css %}
+<style>
+.error-page {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+.error-code {
+  font-size: clamp(80px, 15vw, 120px);
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin-bottom: 20px;
+  line-height: 1;
+}
+.error-title {
+  font-size: clamp(24px, 4vw, 32px);
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+.error-message {
+  font-size: 18px;
+  color: var(--muted);
+  margin-bottom: 32px;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.error-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.error-icon {
+  font-size: 120px;
+  color: var(--primary);
+  opacity: 0.2;
+  margin-bottom: 20px;
+}
+</style>
+{% endblock %}
+{% block content %}
+<section class="error-page">
+  <div class="container">
+    <div class="error-icon">
+      <i class="fas fa-exclamation-triangle"></i>
+    </div>
+    <div class="error-code">404</div>
+    <h1 class="error-title">Page Not Found</h1>
+    <p class="error-message">The page you're looking for doesn't exist or has been moved. Let's get you back on track.</p>
+    <div class="error-actions">
+      <a class="btn btn-primary" href="{% url 'home' %}">
+        <i class="fas fa-home"></i> Go Home
+      </a>
+      <a class="btn btn-outline" href="javascript:history.back()">
+        <i class="fas fa-arrow-left"></i> Go Back
+      </a>
+    </div>
+  </div>
+</section>
+{% endblock %}
+

@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ contribution.title }}{% endblock %}
+
+{% block content %}
+<section class="container" style="padding: 20px 0 28px; max-width: 980px;">
+  <article class="card" style="border:1px solid var(--border);border-radius:12px;background:var(--surface);overflow:hidden;">
+    {% if contribution.image %}
+      <div style="aspect-ratio: 16/6; background:#111;">
+        <img src="{{ contribution.image.url }}" alt="" style="width:100%;height:100%;object-fit:cover;" loading="lazy">
+      </div>
+    {% endif %}
+
+    <div style="padding:16px; display:grid; gap:12px;">
+      <header style="display:grid;gap:8px;">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+          <span class="badge" style="padding:4px 8px;border-radius:999px;border:1px solid var(--nav-border);">{{ contribution.get_contribution_type_display }}</span>
+          {% if contribution.category %}
+            <span class="badge" style="padding:4px 8px;border-radius:999px;border:1px solid var(--nav-border);">{{ contribution.get_category_display }}</span>
+          {% endif %}
+          <span class="badge" style="padding:4px 8px;border-radius:999px;border:1px solid var(--nav-border);">{{ contribution.get_status_display }}</span>
+          {% if contribution.is_verified %}
+            <span class="badge" style="padding:4px 8px;border-radius:999px;border:1px solid var(--nav-border);color:var(--primary);">Verified</span>
+          {% endif %}
+        </div>
+        <h1 style="margin:0;">{{ contribution.title }}</h1>
+        <div class="muted" style="display:flex;gap:14px;flex-wrap:wrap;font-size:14px;color:var(--muted);">
+          <span>By {{ contribution.user.get_full_name|default:contribution.user.username }}</span>
+          <span>•</span>
+          <span>{{ contribution.created_at|date:"M j, Y" }}</span>
+          {% if contribution.location %}<span>•</span><span>{{ contribution.location }}</span>{% endif %}
+          {% if contribution.event_date %}<span>•</span><span>Event: {{ contribution.event_date|date:"M j, Y, H:i" }}</span>{% endif %}
+        </div>
+      </header>
+
+      <div class="prose">
+        <p style="white-space:pre-line;">{{ contribution.description }}</p>
+      </div>
+
+      {% if contribution.latitude and contribution.longitude %}
+        <div style="margin-top:8px;">
+          <iframe
+            title="Location map"
+            width="100%"
+            height="280"
+            style="border:0;border-radius:10px"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            src="https://www.openstreetmap.org/export/embed.html?bbox={{ contribution.longitude|floatformat:6 }},{{ contribution.latitude|floatformat:6 }},{{ contribution.longitude|floatformat:6 }},{{ contribution.latitude|floatformat:6 }}&layer=mapnik&marker={{ contribution.latitude|floatformat:6 }},{{ contribution.longitude|floatformat:6 }}">
+          </iframe>
+        </div>
+      {% endif %}
+
+      <footer style="display:flex;gap:10px;align-items:center;justify-content:space-between;margin-top:8px;">
+        <div style="display:flex;gap:8px;align-items:center;">
+          {# Note: user_has_upvoted not annotated here, default to False if missing #}
+          {% with upvoted=contribution.user_has_upvoted|default:False %}
+          <button
+            class="btn {% if upvoted %}is-active{% endif %}"
+            data-upvote-btn
+            data-url="{% url 'freecontribution:toggle_upvote' pk=contribution.pk %}"
+            aria-pressed="{{ upvoted|yesno:'true,false' }}">
+            <span>▲</span>
+            <span data-count>{{ contribution.upvotes_count }}</span>
+          </button>
+          {% endwith %}
+          <span class="muted" style="font-size:14px;color:var(--muted);">Comments: {{ contribution.comments_count }} • Views: {{ contribution.views_count }}</span>
+        </div>
+
+        <a class="btn" href="{% url 'freecontribution:contribution_home' %}">Back</a>
+      </footer>
+    </div>
+  </article>
+</section>
+
+<script>
+  // Upvote on detail
+  (function(){
+    function getCookie(name){
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(";").shift();
+    }
+    document.addEventListener("click", async (e) => {
+      const btn = e.target.closest("[data-upvote-btn]");
+      if(!btn) return;
+      e.preventDefault();
+      const url = btn.getAttribute("data-url");
+      try {
+        const res = await fetch(url, {
+          method: "POST",
+          headers: {
+            "X-CSRFToken": getCookie("csrftoken"),
+            "Accept": "application/json",
+          },
+          credentials: "same-origin"
+        });
+        if (res.redirected) { window.location = res.url; return; }
+        const data = await res.json();
+        if(data && data.success){
+          btn.classList.toggle("is-active", !!data.upvoted);
+          const cnt = btn.querySelector("[data-count]");
+          if (cnt) cnt.textContent = data.count;
+          btn.setAttribute("aria-pressed", data.upvoted ? "true" : "false");
+        }
+      } catch(err){ console.error(err); }
+    });
+  })();
+</script>
+{% endblock %}

@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Report Details{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/print.css' %}" media="print">
+<style>
+.share-buttons {
+    display: flex;
+    gap: 12px;
+    margin: 24px 0;
+    flex-wrap: wrap;
+}
+
+.share-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: var(--elev);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.share-btn:hover {
+    transform: translateY(-2px);
+    border-color: var(--primary);
+}
+
+.share-btn.facebook:hover { background: #1877f2; color: #fff; border-color: #1877f2; }
+.share-btn.twitter:hover { background: #1da1f2; color: #fff; border-color: #1da1f2; }
+.share-btn.whatsapp:hover { background: #25d366; color: #fff; border-color: #25d366; }
+.share-btn.copy:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4" style="max-width:700px;">
+    <h2 class="mb-3">Report Details</h2>
+    <div class="card mb-4">
+        {% if report.image %}
+            <img src="{{ report.image.url }}" class="card-img-top" alt="Report Image" style="max-height:300px;object-fit:cover;">
+        {% endif %}
+        <div class="card-body">
+            <h5 class="card-title">
+                {{ report.get_issue_type_display }}
+                {% if report.issue_type == 'other' and report.other_issue %}
+                    <span class="muted">({{ report.other_issue }})</span>
+                {% endif %}
+            </h5>
+            <p class="card-text">{{ report.description }}</p>
+            <p><strong>Location:</strong> {{ report.location }}</p>
+            {% if report.latitude and report.longitude %}
+                <p><strong>Coordinates:</strong> {{ report.latitude }}, {{ report.longitude }}</p>
+            {% endif %}
+            <p>
+                <span class="badge
+                    {% if report.status == 'pending' %}badge-pending
+                    {% elif report.status == 'in_progress' %}badge-progress
+                    {% elif report.status == 'resolved' %}badge-resolved
+                    {% elif report.status == 'rejected' %}badge-rejected
+                    {% endif %}">
+                    {{ report.get_status_display }}
+                </span>
+            </p>
+            <p><strong>Submitted:</strong> {{ report.created_at|date:"d M Y, H:i" }}</p>
+            {% if report.department %}
+                <p><strong>Department:</strong> {{ report.department.name }}</p>
+            {% endif %}
+            {% if report.assigned_to %}
+                <p><strong>Assigned To:</strong> {{ report.assigned_to.get_full_name|default:report.assigned_to.username }}</p>
+            {% endif %}
+
+            {% if attachments %}
+                <hr>
+                <h6>Attachments:</h6>
+                <div class="media-gallery">
+                    {% for att in attachments %}
+                        {% with att.file.url|lower as file_url %}
+    {% if ".jpg" in file_url or ".jpeg" in file_url or ".png" in file_url or ".gif" in file_url %}
+        <a href="{{ att.file.url }}" target="_blank"><img src="{{ att.file.url }}" alt="Attachment" style="max-width:120px;max-height:90px;"></a>
+    {% elif ".pdf" in file_url %}
+        <a href="{{ att.file.url }}" target="_blank" class="btn btn-outline">PDF Attachment</a>
+    {% else %}
+        <a href="{{ att.file.url }}" target="_blank" class="btn btn-outline">Download</a>
+    {% endif %}
+{% endwith %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {% if status_history %}
+                <hr>
+                <h6>Status History:</h6>
+                <ul class="muted" style="font-size:0.97em;">
+                    {% for h in status_history %}
+                        <li>
+                            <b>{{ h.get_new_status_display }}</b>
+                            {% if h.remarks %} ({{ h.remarks }}){% endif %}
+                            — {{ h.changed_at|date:"d M Y, H:i" }}
+                            {% if h.changed_by %} by {{ h.changed_by.get_full_name|default:h.changed_by.username }}{% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            {% if report.status == 'resolved' and report.feedback %}
+                <hr>
+                <h6>Your Feedback:</h6>
+                <p>{{ report.feedback }}</p>
+                <p>Rating: {{ report.rating }}/5</p>
+            {% endif %}
+            
+            <!-- Share Buttons -->
+            <hr>
+            <div class="share-buttons">
+                <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank" class="share-btn facebook">
+                    <i class="fab fa-facebook-f"></i> Facebook
+                </a>
+                <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}&text={{ report.get_issue_type_display|urlencode }}" target="_blank" class="share-btn twitter">
+                    <i class="fab fa-twitter"></i> Twitter
+                </a>
+                <a href="https://wa.me/?text={{ report.get_issue_type_display|urlencode }}%20-%20{{ request.build_absolute_uri|urlencode }}" target="_blank" class="share-btn whatsapp">
+                    <i class="fab fa-whatsapp"></i> WhatsApp
+                </a>
+                <button onclick="copyToClipboard('{{ request.build_absolute_uri }}')" class="share-btn copy">
+                    <i class="fas fa-link"></i> Copy Link
+                </button>
+                <button onclick="window.print()" class="share-btn" style="background: var(--primary); color: #fff; border-color: var(--primary);">
+                    <i class="fas fa-print"></i> Print
+                </button>
+            </div>
+        </div>
+    </div>
+    <a href="{% url 'reports:report_list' %}" class="btn btn-outline">Back to My Reports</a>
+</div>
+
+<script>
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        alert('Link copied to clipboard!');
+    }).catch(() => {
+        // Fallback for older browsers
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        alert('Link copied to clipboard!');
+    });
+}
+</script>
+{% endblock %}

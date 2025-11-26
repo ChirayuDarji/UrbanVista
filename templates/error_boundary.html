@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Error — UrbanVista{% endblock %}
+
+{% block content %}
+<div class="error-boundary">
+  <div class="error-boundary-icon">⚠️</div>
+  <h3>Something went wrong</h3>
+  <p>{{ error_message|default:"An unexpected error occurred. Please try refreshing the page or contact support if the problem persists." }}</p>
+  <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+    <a href="{% url 'home' %}" class="btn btn-primary">Go Home</a>
+    <button onclick="window.location.reload()" class="btn btn-outline">Refresh Page</button>
+  </div>
+  {% if request.user.is_staff %}
+  <details style="margin-top: 24px; text-align: left; max-width: 600px; margin-left: auto; margin-right: auto;">
+    <summary style="cursor: pointer; color: var(--muted); font-size: 14px;">Technical Details (Staff Only)</summary>
+    <pre style="margin-top: 12px; padding: 12px; background: var(--elev); border: 1px solid var(--border); border-radius: 8px; font-size: 12px; overflow-x: auto;">{{ error_details|default:"No additional details available." }}</pre>
+  </details>
+  {% endif %}
+</div>
+{% endblock %}
+

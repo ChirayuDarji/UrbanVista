@@ -1,0 +1,301 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ page_title|default:"Filtered Contributions" }}{% endblock %}
+
+{% block extra_head %}
+<style>
+  :root {
+  --surface: #0e1420;
+  --border:  #242a36;
+  --muted:   #9aa0aa;
+  --primary: #00d4ff;
+  --accent:  #ff3d81;
+  --text:    #e6e8ee;
+
+  --radius-10: 10px;
+  --radius-12: 12px;
+  --shadow-lg: 0 20px 50px rgba(0,0,0,.35);
+}
+
+/* General containers and layout */
+.container {
+  width: min(1100px, 94%);
+  margin-inline: auto;
+  padding: 0 10px;
+}
+
+.card {
+  background: color-mix(in srgb, var(--surface) 98%, #000 2%);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-12);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  padding: 18px 16px;
+  margin-bottom: 18px;
+  transition: box-shadow .2s, background .2s;
+}
+.card:hover {
+  box-shadow: var(--shadow-lg);
+  background: color-mix(in srgb, var(--surface) 92%, #000 8%);
+}
+
+.muted {
+  color: var(--muted);
+}
+
+h1, h2 {
+  color: var(--text);
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.section-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 10px 0 8px;
+}
+.section-head h2 {
+  color: var(--muted);
+  margin: 0;
+  font-weight: 800;
+}
+
+/* Stats */
+.stats {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.stat {
+  background: color-mix(in srgb, var(--surface) 98%, #000 2%);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  min-width: 110px;
+  padding: 16px 24px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.stat-label {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 4px;
+  letter-spacing: 0.02em;
+}
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary);
+  line-height: 1.1;
+}
+
+/* Filters */
+.filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: 10px 0 18px;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 40px;
+  padding: 0 16px;
+  border-radius: var(--radius-10);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  text-decoration: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background .2s, color .2s, border-color .2s, box-shadow .2s;
+}
+.btn-primary {
+  border: none;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  color: #fff;
+  font-weight: 700;
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--primary) 28%, transparent);
+}
+.btn-outline {
+  background: transparent;
+  color: var(--text);
+  border-color: var(--border);
+}
+.btn[aria-pressed="true"], .btn.is-active {
+  background: color-mix(in srgb, var(--primary) 16%, transparent);
+  color: var(--text);
+}
+.btn-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Grid of cards */
+.grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  margin-bottom: 18px;
+}
+
+/* Gallery masonry */
+.masonry {
+  columns: 1;
+  column-gap: 12px;
+  margin-top: 14px;
+}
+@media (min-width: 640px) { .masonry { columns: 2; } }
+@media (min-width: 980px) { .masonry { columns: 3; } }
+.tile {
+  display: inline-block;
+  width: 100%;
+  margin: 0 0 12px;
+  border-radius: var(--radius-12);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  transition: transform .12s, box-shadow .2s;
+}
+.tile img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.tile:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Lightbox */
+.lightbox {
+  border: none;
+  padding: 0;
+  width: min(92vw, 1100px);
+  background: transparent;
+}
+.lightbox::backdrop {
+  background: rgba(0,0,0,.7);
+}
+.lightbox img {
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-12);
+  border: 1px solid var(--border);
+}
+.lightbox-close {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  background: rgba(0,0,0,.6);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 999px;
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+}
+
+/* CTA */
+.cta {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+/* Empty state */
+.empty {
+  padding: 30px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-12);
+  text-align: center;
+  background: color-mix(in srgb, var(--surface) 96%, transparent);
+  color: var(--muted);
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+  margin-top: 16px;
+}
+.pagination .muted {
+  color: var(--muted);
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .stats { flex-direction: column; gap: 12px; }
+  .grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .container { padding: 0 4px; }
+  .section-head { flex-direction: column; align-items: flex-start; gap: 6px; }
+  .masonry .tile img { height: 80px; }
+  .card { padding: 12px 8px; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Header -->
+<section class="container" style="padding: 18px 0 8px;">
+  <div class="card">
+    <h1>{{ page_title|default:"Filtered Contributions" }}</h1>
+    <p class="muted">{{ hero_subtitle|default:"Filtered by category" }}</p>
+  </div>
+</section>
+
+<!-- Filters -->
+<section class="container">
+  {% include "FreeContribution/_filters.html" with active=filter_type %}
+</section>
+
+<!-- Contributions Grid -->
+<section class="container" style="padding: 12px 0 8px;">
+  {% if contributions and contributions|length %}
+    <div class="grid">
+      {% for c in contributions %}
+        {% include "FreeContribution/_card.html" with c=c %}
+      {% endfor %}
+    </div>
+  {% else %}
+    {% include "FreeContribution/_empty_state.html" with message="Nothing found for this filter yet." %}
+  {% endif %}
+  {% include "FreeContribution/_pagination.html" with page_obj=page_obj %}
+</section>
+
+
+
+<!-- Call to Action -->
+<section class="container" style="padding: 14px 0 24px;">
+  <div class="card" style="text-align:center;">
+    <h2>Have something to add?</h2>
+    <p class="muted">Share your {{ filter_type|default:"local" }} update and help the community.</p>
+    <div class="cta" style="margin-top:10px;">
+      {% if filter_type %}
+        <a class="btn btn-primary" href="{% url 'freecontribution:contribution_create_type' type_slug=filter_type %}">Create {{ filter_type|capfirst }}</a>
+      {% endif %}
+      <a class="btn" href="{% url 'freecontribution:contribution_home' %}">Browse all</a>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/freecontribution-home.js' %}" defer></script>
+{% endblock %}

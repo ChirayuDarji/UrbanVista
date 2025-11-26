@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}My Reports{% endblock %}
+
+{% block content %}
+<h1>My Reports</h1>
+
+<div style="display:flex; gap:12px; margin-bottom:1rem;">
+  <span>Pending: {{ pending_count }}</span>
+  <span>Resolved: {{ resolved_count }}</span>
+  <span>Flagged/Spam: {{ spam_count }}</span>
+</div>
+
+<form method="get" class="filters" style="margin-bottom:1rem;display:flex;gap:8px;flex-wrap:wrap;">
+  <select name="status">
+    <option value="ALL" {% if current_status == "ALL" %}selected{% endif %}>All statuses</option>
+    {% for val,label in statuses %}
+      <option value="{{ val }}" {% if current_status == val %}selected{% endif %}>{{ label }}</option>
+    {% endfor %}
+  </select>
+  <select name="category">
+    <option value="">All categories</option>
+    {% for c in categories %}
+      <option value="{{ c.id }}" {% if current_category|default:'' == c.id|stringformat:"s" %}selected{% endif %}>
+        {{ c.name }}
+      </option>
+    {% endfor %}
+  </select>
+  <select name="sort">
+    <option value="-submitted_at" {% if current_sort == "-submitted_at" %}selected{% endif %}>Newest</option>
+    <option value="submitted_at" {% if current_sort == "submitted_at" %}selected{% endif %}>Oldest</option>
+    <option value="-views_count" {% if current_sort == "-views_count" %}selected{% endif %}>Most viewed</option>
+  </select>
+  <button type="submit">Apply</button>
+</form>
+
+<table style="width:100%; border-collapse:collapse;">
+  <thead>
+    <tr>
+      <th style="text-align:left;border-bottom:1px solid #ddd;">Report</th>
+      <th style="text-align:left;border-bottom:1px solid #ddd;">Category</th>
+      <th style="text-align:left;border-bottom:1px solid #ddd;">Ward</th>
+      <th style="text-align:left;border-bottom:1px solid #ddd;">Status</th>
+      <th style="text-align:left;border-bottom:1px solid #ddd;">Submitted</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for r in page_obj %}
+      <tr>
+        <td style="padding:8px 0;">
+          <a href="{% url 'reports:report_detail' r.pk %}">
+            {{ r.report_number }} — {{ r.title }}
+          </a>
+        </td>
+        <td>{{ r.category.name }}</td>
+        <td>Ward {{ r.ward.ward_number }}</td>
+        <td>{{ r.get_status_display }}</td>
+        <td>{{ r.submitted_at|date:"Y-m-d H:i" }}</td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="5">No reports yet.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% if page_obj.paginator.num_pages > 1 %}
+<nav class="pagination" aria-label="Pagination" style="margin-top:1rem;">
+  {% if page_obj.has_previous %}
+    <a href="?page={{ page_obj.previous_page_number }}&status={{ current_status }}&category={{ current_category }}&sort={{ current_sort }}">Prev</a>
+  {% endif %}
+  <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+  {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}&status={{ current_status }}&category={{ current_category }}&sort={{ current_sort }}">Next</a>
+  {% endif %}
+</nav>
+{% endif %}
+{% endblock %}

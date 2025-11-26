@@ -1,0 +1,19 @@
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: [example.com] Please Confirm Your Email Address
+From: no-reply@example.local
+To: mihir@gmail.com
+Date: Tue, 04 Nov 2025 14:03:31 -0000
+Message-ID: 
+ <176226501192.9260.554317960290796109@Darji-Chirayus-1Computer.lan>
+
+Hello from example.com!
+
+You're receiving this email because user kashmira_p has given your email address to register an account on example.com.
+
+To confirm this is correct, go to http://127.0.0.1:8000/accounts/confirm-email/Ng:1vGHdD:KS3iDkqfVvpPyR-T37UKKqAEVzzfjcoXGg29_X4GS2c/
+
+Thank you for using example.com!
+example.com
+-------------------------------------------------------------------------------

@@ -1,0 +1,334 @@
+{% extends "admin/index.html" %}
+{% load i18n static %}
+
+{% block extrahead %}
+{{ block.super }}
+<script src="{% static 'js/admin.js' %}" defer></script>
+{% endblock %}
+
+{% block content %}
+<!-- Statistics Cards - Two columns -->
+<div class="dashboard-grid-two" style="padding: 0; margin: 0;">
+    {% for app in app_list %}
+    <div class="dashboard-card">
+        <div class="dashboard-card-header">
+            <div class="dashboard-card-title">{{ app.name }}</div>
+            <div class="dashboard-card-icon">
+                {% if "account" in app.name|lower %}
+                    <i class="fas fa-user-circle"></i>
+                {% elif "auth" in app.name|lower or "user" in app.name|lower %}
+                    <i class="fas fa-users"></i>
+                {% elif "project" in app.name|lower %}
+                    <i class="fas fa-project-diagram"></i>
+                {% elif "news" in app.name|lower %}
+                    <i class="fas fa-newspaper"></i>
+                {% elif "report" in app.name|lower %}
+                    <i class="fas fa-file-alt"></i>
+                {% elif "free" in app.name|lower or "contribution" in app.name|lower %}
+                    <i class="fas fa-hand-holding-heart"></i>
+                {% else %}
+                    <i class="fas fa-folder"></i>
+                {% endif %}
+            </div>
+        </div>
+        <div class="dashboard-card-value">{{ app.models|length }}</div>
+        <div class="dashboard-card-change">
+            <span>Models</span>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Animated Charts Section - Three columns -->
+<div class="dashboard-section">
+    <div class="charts-row">
+        <!-- Column 1 - Two Charts -->
+        <div class="charts-column">
+            <div class="module chart-module">
+                <h2><i class="fas fa-chart-line"></i> Growth Trend</h2>
+                <div class="chart-content growth-trend-content">
+                    <div class="growth-header">
+                        <div class="growth-title">NEW ACCOUNTS SINCE 2024</div>
+                        <div class="growth-stats">
+                            <div class="growth-percentage">
+                                <i class="fas fa-arrow-up growth-arrow"></i>
+                                <span class="growth-value">78%</span>
+                            </div>
+                            <div class="growth-increase">+14</div>
+                        </div>
+                    </div>
+                    <div class="static-area-chart">
+                        <svg class="area-chart-svg" viewBox="0 0 400 200">
+                            <defs>
+                                <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#4ade80;stop-opacity:0.3" />
+                                    <stop offset="100%" style="stop-color:#4ade80;stop-opacity:0.05" />
+                                </linearGradient>
+                                <linearGradient id="lineGradientNew" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" style="stop-color:#4ade80;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#22c55e;stop-opacity:1" />
+                                </linearGradient>
+                            </defs>
+                            <!-- Area fill -->
+                            <path class="area-path-static" d="M 20,150 L 20,150 L 50,130 L 80,110 L 110,95 L 140,85 L 170,75 L 200,70 L 230,65 L 260,60 L 290,55 L 320,50 L 350,45 L 380,40 L 380,150 Z" fill="url(#areaGradient)"></path>
+                            <!-- Line -->
+                            <polyline class="area-line-static" points="20,150 50,130 80,110 110,95 140,85 170,75 200,70 230,65 260,60 290,55 320,50 350,45 380,40" fill="none" stroke="url(#lineGradientNew)" stroke-width="3"></polyline>
+                            <!-- Data points -->
+                            <circle class="area-dot-static" cx="20" cy="150" r="4" fill="#4ade80"></circle>
+                            <circle class="area-dot-static" cx="50" cy="130" r="4" fill="#4ade80"></circle>
+                            <circle class="area-dot-static" cx="80" cy="110" r="4" fill="#4ade80"></circle>
+                            <circle class="area-dot-static" cx="110" cy="95" r="4" fill="#4ade80"></circle>
+                            <circle class="area-dot-static" cx="140" cy="85" r="4" fill="#4ade80"></circle>
+                            <circle class="area-dot-static" cx="170" cy="75" r="4" fill="#4ade80"></circle>
+                            <circle class="area-dot-static" cx="200" cy="70" r="4" fill="#4ade80"></circle>
+                            <circle class="area-dot-static" cx="230" cy="65" r="4" fill="#4ade80"></circle>
+                            <circle class="area-dot-static" cx="260" cy="60" r="4" fill="#4ade80"></circle>
+                            <circle class="area-dot-static" cx="290" cy="55" r="4" fill="#4ade80"></circle>
+                            <circle class="area-dot-static" cx="320" cy="50" r="4" fill="#4ade80"></circle>
+                            <circle class="area-dot-static" cx="350" cy="45" r="4" fill="#4ade80"></circle>
+                            <circle class="area-dot-static" cx="380" cy="40" r="4" fill="#4ade80"></circle>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="module chart-module">
+                <h2><i class="fas fa-chart-bar"></i> Distribution</h2>
+                <div class="chart-content">
+                    <div class="animated-bar-chart">
+                        <div class="bar-item">
+                            <div class="bar-label">Active</div>
+                            <div class="bar-container">
+                                <div class="bar-fill" data-percent="85" style="width: 0%;"></div>
+                            </div>
+                            <div class="bar-value">85%</div>
+                        </div>
+                        <div class="bar-item">
+                            <div class="bar-label">Pending</div>
+                            <div class="bar-container">
+                                <div class="bar-fill" data-percent="60" style="width: 0%;"></div>
+                            </div>
+                            <div class="bar-value">60%</div>
+                        </div>
+                        <div class="bar-item">
+                            <div class="bar-label">Completed</div>
+                            <div class="bar-container">
+                                <div class="bar-fill" data-percent="45" style="width: 0%;"></div>
+                            </div>
+                            <div class="bar-value">45%</div>
+                        </div>
+                        <div class="bar-item">
+                            <div class="bar-label">Archived</div>
+                            <div class="bar-container">
+                                <div class="bar-fill" data-percent="30" style="width: 0%;"></div>
+                            </div>
+                            <div class="bar-value">30%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Column 2 - Two Charts -->
+        <div class="charts-column">
+            <div class="module chart-module">
+                <h2><i class="fas fa-bullseye"></i> Performance</h2>
+                <div class="chart-content">
+                    <div class="animated-pie-chart-full">
+                        <div class="pie-chart-wrapper">
+                            <svg class="pie-chart-full" viewBox="0 0 220 220" preserveAspectRatio="xMidYMid meet">
+                                <defs>
+                                    <filter id="pieGlow">
+                                        <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+                                        <feMerge>
+                                            <feMergeNode in="coloredBlur"/>
+                                            <feMergeNode in="SourceGraphic"/>
+                                        </feMerge>
+                                    </filter>
+                                </defs>
+                                <circle class="pie-bg-full" cx="110" cy="110" r="90" fill="var(--admin-border)"></circle>
+                                <circle class="pie-fill-full" cx="110" cy="110" r="90" data-percent="75" fill="none" stroke="#4ade80" stroke-width="18" stroke-linecap="round" filter="url(#pieGlow)"></circle>
+                            </svg>
+                            <div class="pie-text-overlay">
+                                <div class="pie-text">75%</div>
+                                <div class="pie-label">Active</div>
+                            </div>
+                        </div>
+                        <div class="pie-legend">
+                            <div class="legend-item">
+                                <span class="legend-color" style="background: #4ade80;"></span>
+                                <span class="legend-text">Active</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-color" style="background: var(--admin-border);"></span>
+                                <span class="legend-text">Inactive</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="module chart-module">
+                <h2><i class="fas fa-chart-pie"></i> Activity Stats</h2>
+                <div class="chart-content">
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-icon"><i class="fas fa-users"></i></div>
+                            <div class="stat-number">1,234</div>
+                            <div class="stat-label">Total Users</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-icon"><i class="fas fa-file-alt"></i></div>
+                            <div class="stat-number">567</div>
+                            <div class="stat-label">Reports</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-icon"><i class="fas fa-newspaper"></i></div>
+                            <div class="stat-number">89</div>
+                            <div class="stat-label">News</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-icon"><i class="fas fa-project-diagram"></i></div>
+                            <div class="stat-number">123</div>
+                            <div class="stat-label">Projects</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Column 3 - Two Charts -->
+        <div class="charts-column">
+            <div class="module chart-module">
+                <h2><i class="fas fa-tasks"></i> Quick Actions</h2>
+                <div class="chart-content">
+                    <div class="quick-actions-grid">
+                        {% if app_list %}
+                            {% with first_app=app_list|first %}
+                                {% if first_app.models %}
+                                    {% with first_model=first_app.models|first %}
+                                        {% if first_model.add_url %}
+                                            <a href="{{ first_model.add_url }}" class="quick-action-item">
+                                                <i class="fas fa-plus-circle"></i>
+                                                <span>Add New</span>
+                                            </a>
+                                        {% else %}
+                                            <a href="{% url 'admin:index' %}" class="quick-action-item">
+                                                <i class="fas fa-plus-circle"></i>
+                                                <span>Add New</span>
+                                            </a>
+                                        {% endif %}
+                                    {% endwith %}
+                                {% else %}
+                                    <a href="{% url 'admin:index' %}" class="quick-action-item">
+                                        <i class="fas fa-plus-circle"></i>
+                                        <span>Add New</span>
+                                    </a>
+                                {% endif %}
+                            {% endwith %}
+                        {% else %}
+                            <a href="{% url 'admin:index' %}" class="quick-action-item">
+                                <i class="fas fa-plus-circle"></i>
+                                <span>Add New</span>
+                            </a>
+                        {% endif %}
+                        <a href="{% url 'admin:index' %}" class="quick-action-item" onclick="window.location.reload(); return false;">
+                            <i class="fas fa-download"></i>
+                            <span>Export Data</span>
+                        </a>
+                        <a href="{% url 'admin:index' %}" class="quick-action-item" onclick="window.location.reload(); return false;">
+                            <i class="fas fa-sync"></i>
+                            <span>Refresh</span>
+                        </a>
+                        <a href="{% url 'admin:password_change' %}" class="quick-action-item">
+                            <i class="fas fa-cog"></i>
+                            <span>Settings</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="module chart-module">
+                <h2><i class="fas fa-info-circle"></i> System Info</h2>
+                <div class="chart-content">
+                    <div class="system-info-list">
+                        <div class="info-item">
+                            <i class="fas fa-server"></i>
+                            <div class="info-content">
+                                <div class="info-label">Server Status</div>
+                                <div class="info-value">Online</div>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-database"></i>
+                            <div class="info-content">
+                                <div class="info-label">Database</div>
+                                <div class="info-value">Connected</div>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-clock"></i>
+                            <div class="info-content">
+                                <div class="info-label">Uptime</div>
+                                <div class="info-value">99.9%</div>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-shield-alt"></i>
+                            <div class="info-content">
+                                <div class="info-label">Security</div>
+                                <div class="info-value">Active</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Models List -->
+<div class="dashboard-section">
+    {% for app in app_list %}
+    <div class="module">
+        <h2>
+            <a href="{{ app.app_url }}" title="{% blocktrans with name=app.name %}Models in the {{ name }} application{% endblocktrans %}">{{ app.name }}</a>
+        </h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>{% trans 'Model' %}</th>
+                    <th>{% trans 'Actions' %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for model in app.models %}
+                <tr>
+                    <td>
+                        {% if model.admin_url %}
+                            <a href="{{ model.admin_url }}">{{ model.name }}</a>
+                        {% else %}
+                            {{ model.name }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if model.admin_url %}
+                            <a href="{{ model.admin_url }}" class="button">{% trans 'View' %}</a>
+                        {% endif %}
+                        {% if model.add_url %}
+                            <a href="{{ model.add_url }}" class="button">{% trans 'Add' %}</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% empty %}
+    <div class="module">
+        <p>{% trans "You don't have permission to view or edit anything." %}</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
+

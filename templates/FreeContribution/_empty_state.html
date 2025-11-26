@@ -1,0 +1,13 @@
+<div class="empty-state">
+  <div class="empty-state-icon">
+    <i class="fas fa-compass"></i>
+  </div>
+  <h3>{{ title|default:"Nothing here yet" }}</h3>
+  <p class="muted">{{ message|default:"Be the first to share your travel experience!" }}</p>
+  {% if cta_url and cta_text %}
+    <a href="{{ cta_url }}" class="btn btn-primary">
+      <i class="fas fa-plus"></i>
+      <span>{{ cta_text }}</span>
+    </a>
+  {% endif %}
+</div>

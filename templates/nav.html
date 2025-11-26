@@ -1,0 +1,289 @@
+{% load static %}
+
+<header id="site-header" class="navbar" role="banner">
+  <div class="container nav-inner">
+
+    <!-- Brand -->
+    <a class="brand" href="{% url 'home' %}" aria-label="Home">
+      <img src="{% static 'images/logo.png' %}" alt="UrbanVista logo" class="logo" decoding="async" loading="eager" />
+      <span class="brand-text">UrbanVista</span>
+    </a>
+
+    <!-- Right side: Navigation and Actions -->
+    <div class="nav-right">
+      <!-- Primary nav -->
+      {% with rm=request.resolver_match ns=rm.namespace|default:'' name=rm.url_name|default:'' %}
+      <nav id="site-nav" class="nav-primary" aria-label="Primary">
+        <a class="nav-link{% if ns == 'freecontribution' %} is-active{% endif %}"
+           href="{% url 'freecontribution:experience_home' %}"
+           {% if ns == 'freecontribution' %}aria-current="page"{% endif %}>
+          Contribute
+        </a>
+      
+        <a class="nav-link{% if ns == 'reports' %} is-active{% endif %}"
+           href="{% url 'reports:report_list' %}"
+           {% if ns == 'reports' %}aria-current="page"{% endif %}>
+            Reports
+        </a>
+
+        <a class="nav-link{% if ns == 'news' %} is-active{% endif %}"
+           href="{% url 'news:list' %}"
+           {% if ns == 'news' %}aria-current="page"{% endif %}>
+          News
+        </a>
+        <a class="nav-link{% if name == 'about' %} is-active{% endif %}"
+           href="{% url 'about' %}"
+           {% if name == 'about' %}aria-current="page"{% endif %}>
+          About
+        </a>
+        
+        <a class="nav-link{% if 'projects' in request.path %} is-active{% endif %}"
+           href="{% url 'projects:list' %}"
+           {% if 'projects' in request.path %}aria-current="page"{% endif %}>
+          Projects
+        </a>
+        
+        <!-- More Features Dropdown -->
+        <div class="nav-dropdown" data-dropdown>
+          <button class="nav-link nav-dropdown-btn" type="button" aria-haspopup="true" aria-expanded="false">
+            More <i class="fas fa-chevron-down" style="font-size: 10px; margin-left: 4px;"></i>
+          </button>
+          <div class="nav-dropdown-menu" role="menu">
+            <a href="{% url 'reports:statistics' %}" class="nav-dropdown-item" role="menuitem">
+              <i class="fas fa-chart-bar"></i> Statistics
+            </a>
+            <a href="{% url 'reports:leaderboard' %}" class="nav-dropdown-item" role="menuitem">
+              <i class="fas fa-trophy"></i> Leaderboard
+            </a>
+            {% if user.is_authenticated %}
+            <a href="{% url 'reports:enhanced_dashboard' %}" class="nav-dropdown-item" role="menuitem">
+              <i class="fas fa-dashboard"></i> My Dashboard
+            </a>
+            {% endif %}
+            <a href="{% url 'help_center' %}" class="nav-dropdown-item" role="menuitem">
+              <i class="fas fa-question-circle"></i> Help Center
+            </a>
+          </div>
+        </div>
+      </nav>
+      {% endwith %}
+
+      <!-- Actions -->
+      <div class="nav-actions">
+      <!-- Search Toggle -->
+      <button class="btn btn-ghost icon-btn" type="button" aria-label="Search" data-search-toggle data-tooltip="Search (Press /)" data-tooltip-position="bottom">
+        <i class="fas fa-search"></i>
+      </button>
+      
+      <!-- Theme toggle -->
+      <button id="themeToggle" class="btn btn-ghost icon-btn" type="button" aria-label="Toggle theme" aria-pressed="false" data-tooltip="Toggle dark/light mode" data-tooltip-position="bottom">
+        <svg class="icon icon-sun" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M12 4V2m0 20v-2M4 12H2m20 0h-2M5.64 5.64 4.22 4.22m15.56 15.56-1.42-1.42M5.64 18.36 4.22 19.78m15.56-15.56-1.42 1.42" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+        <svg class="icon icon-moon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+      </button>
+
+      {% if user.is_authenticated %}
+        <div class="user-menu" data-state="closed">
+          <!-- Avatar trigger -->
+          <button id="userMenuBtn" class="user-menu-trigger" type="button"
+                  aria-haspopup="menu" aria-expanded="false" aria-controls="userMenuPanel">
+            {% with account=user.socialaccount_set.all.0 %}
+              {% if account and account.extra_data.picture %}
+                <img src="{{ account.extra_data.picture }}" alt="{{ user.get_full_name|default:user.username }} profile picture" class="avatar-img" decoding="async" loading="lazy" />
+              {% else %}
+                <div class="avatar-img" aria-hidden="true" style="display:grid;place-items:center;background:var(--surface);color:var(--primary);font-weight:700;">
+                  {{ user.get_full_name|default:user.username|slice:":1"|upper }}
+                </div>
+              {% endif %}
+            {% endwith %}
+            <span class="sr-only">Open user menu</span>
+          </button>
+
+          <!-- Dropdown -->
+          <div id="userMenuPanel" class="menu" role="menu" aria-label="User menu" aria-labelledby="userMenuBtn" aria-hidden="true">
+            <div class="menu-header">
+              {% with account=user.socialaccount_set.all.0 %}
+                {% if account and account.extra_data.picture %}
+                  <img src="{{ account.extra_data.picture }}" alt="{{ user.get_full_name|default:user.username }} profile picture" class="avatar-lg-img" decoding="async" loading="lazy" />
+                {% else %}
+                  <div class="avatar-lg-icon" aria-hidden="true">
+                    <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0 2c-4.42 0-8 2.24-8 5v1h16v-1c0-2.76-3.58-5-8-5Z" fill="currentColor"/>
+                    </svg>
+                  </div>
+                {% endif %}
+              {% endwith %}
+              <div class="user-info">
+                <strong>{{ user.get_full_name|default:user.username }}</strong>
+                {% if user.email %}<div class="email">{{ user.email }}</div>{% endif %}
+              </div>
+            </div>
+            <div class="menu-actions">
+              <a href="{% url 'reports:enhanced_dashboard' %}" class="manage-btn" role="menuitem">
+                <i class="fas fa-dashboard"></i> My Dashboard
+              </a>
+              <a href="{% url 'reports:statistics' %}" class="manage-btn" role="menuitem">
+                <i class="fas fa-chart-bar"></i> Statistics
+              </a>
+              <a href="{% url 'reports:leaderboard' %}" class="manage-btn" role="menuitem">
+                <i class="fas fa-trophy"></i> Leaderboard
+              </a>
+              <a href="{% url 'help_center' %}" class="manage-btn" role="menuitem">
+                <i class="fas fa-question-circle"></i> Help Center
+              </a>
+              <a href="{% url 'account_email' %}" class="manage-btn" role="menuitem">Manage your account</a>
+              <form method="post" action="{% url 'account_logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="signout-btn" role="menuitem">Sign out</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      {% else %}
+        <!-- Guest -->
+        <a class="btn btn-login hide-sm" href="{% url 'account_login' %}">Log in</a>
+        <a class="btn btn-primary btn-signup hide-sm" href="{% url 'account_signup' %}">Sign up</a>
+      {% endif %}
+
+      <!-- Mobile menu toggle -->
+      <button id="navToggle" class="btn btn-ghost icon-btn show-sm" type="button"
+              aria-controls="mobileMenu" aria-expanded="false" aria-label="Toggle navigation menu" data-tooltip="Menu" data-tooltip-position="bottom">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile menu -->
+  <div id="mobileMenu" class="mobile-menu" hidden>
+    <nav class="mobile-nav" aria-label="Mobile">
+      <a class="mobile-link" href="{% url 'news:list' %}">News</a>
+      <a class="mobile-link" href="{% url 'about' %}">About</a>
+      <a class="mobile-link" href="{% url 'reports:report_list' %}">Reports</a>
+      <a class="mobile-link" href="{% url 'freecontribution:experience_home' %}">Contribute</a>
+      <a class="mobile-link" href="{% url 'projects:list' %}">Projects</a>
+      {% if user.is_authenticated %}
+      <a class="mobile-link" href="{% url 'reports:enhanced_dashboard' %}">
+        <i class="fas fa-dashboard"></i> My Dashboard
+      </a>
+      {% endif %}
+      <a class="mobile-link" href="{% url 'reports:statistics' %}">
+        <i class="fas fa-chart-bar"></i> Statistics
+      </a>
+      <a class="mobile-link" href="{% url 'reports:leaderboard' %}">
+        <i class="fas fa-trophy"></i> Leaderboard
+      </a>
+      <a class="mobile-link" href="{% url 'help_center' %}">
+        <i class="fas fa-question-circle"></i> Help Center
+      </a>
+      <div class="mobile-actions">
+        {% if user.is_authenticated %}
+          <form method="post" action="{% url 'account_logout' %}">
+            {% csrf_token %}
+            <button class="btn btn-outline block" type="submit">Sign out</button>
+          </form>
+        {% else %}
+          <a class="btn btn-outline block" href="{% url 'account_login' %}">Log in</a>
+          <a class="btn btn-primary block" href="{% url 'account_signup' %}">Sign up</a>
+        {% endif %}
+      </div>
+    </nav>
+  </div>
+</header>
+
+<!-- Inline JS (for menu toggles, theme, etc.) -->
+<script>
+
+  // User menu dropdown
+  const userMenuBtn = document.getElementById('userMenuBtn');
+  const userMenu = userMenuBtn?.closest('.user-menu');
+  const userMenuPanel = document.getElementById('userMenuPanel');
+  if (userMenuBtn && userMenu && userMenuPanel) {
+    userMenuBtn.addEventListener('click', function() {
+      const open = userMenu.getAttribute('data-state') === 'open';
+      userMenu.setAttribute('data-state', open ? 'closed' : 'open');
+      userMenuPanel.setAttribute('aria-hidden', open ? 'true' : 'false');
+      userMenuBtn.setAttribute('aria-expanded', open ? 'false' : 'true');
+    });
+    document.addEventListener('click', function(e) {
+      if (!userMenu.contains(e.target)) {
+        userMenu.setAttribute('data-state', 'closed');
+        userMenuPanel.setAttribute('aria-hidden', 'true');
+        userMenuBtn.setAttribute('aria-expanded', 'false');
+      }
+    });
+  }
+
+  // Mobile menu toggle is handled by app.js
+
+  // Optional: Add scroll shadow to header
+  window.addEventListener('scroll', function() {
+    document.body.classList.toggle('header-scrolled', window.scrollY > 8);
+  });
+
+  // Nav Dropdown
+  (function() {
+    const navDropdown = document.querySelector('[data-dropdown]');
+    const navDropdownBtn = navDropdown?.querySelector('.nav-dropdown-btn');
+    const navDropdownMenu = navDropdown?.querySelector('.nav-dropdown-menu');
+    
+    if (!navDropdown || !navDropdownBtn || !navDropdownMenu) return;
+    
+    function closeDropdown() {
+      navDropdown.removeAttribute('data-dropdown-open');
+      navDropdownBtn.setAttribute('aria-expanded', 'false');
+    }
+    
+    function openDropdown() {
+      navDropdown.setAttribute('data-dropdown-open', 'true');
+      navDropdownBtn.setAttribute('aria-expanded', 'true');
+    }
+    
+    function toggleDropdown() {
+      const isOpen = navDropdown.hasAttribute('data-dropdown-open');
+      if (isOpen) {
+        closeDropdown();
+      } else {
+        openDropdown();
+      }
+    }
+    
+    // Toggle on button click
+    navDropdownBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      toggleDropdown();
+    });
+    
+    // Close when clicking on dropdown items
+    navDropdownMenu.addEventListener('click', function(e) {
+      // Allow the link to work, but close dropdown after a short delay
+      if (e.target.closest('.nav-dropdown-item')) {
+        setTimeout(closeDropdown, 100);
+      }
+    });
+    
+    // Close when clicking outside
+    document.addEventListener('click', function(e) {
+      if (!navDropdown.contains(e.target)) {
+        closeDropdown();
+      }
+    });
+    
+    // Close on Escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && navDropdown.hasAttribute('data-dropdown-open')) {
+        closeDropdown();
+        navDropdownBtn.focus(); // Return focus to button
+      }
+    });
+    
+    // Close on scroll (optional - prevents dropdown from staying open during scroll)
+    let scrollTimeout;
+    window.addEventListener('scroll', function() {
+      if (navDropdown.hasAttribute('data-dropdown-open')) {
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(closeDropdown, 150);
+      }
+    }, { passive: true });
+  })();
+</script>

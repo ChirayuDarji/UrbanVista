@@ -1,0 +1,314 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Help Center — UrbanVista{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+<style>
+.help-center {
+    padding: 40px 20px;
+    background: var(--uv-c-surface-1, var(--surface, #121826));
+    min-height: 100vh;
+}
+
+.help-container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.help-header {
+    text-align: center;
+    margin-bottom: 48px;
+}
+
+.help-header h1 {
+    font-size: clamp(32px, 5vw, 48px);
+    margin-bottom: 16px;
+    color: var(--text);
+    font-weight: 800;
+}
+
+.search-box {
+    max-width: 600px;
+    margin: 0 auto 48px;
+    position: relative;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 16px 48px 16px 20px;
+    background: var(--elev);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    color: var(--text);
+    font-size: 16px;
+}
+
+.search-box i {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+}
+
+.faq-section {
+    margin-bottom: 48px;
+}
+
+.faq-section h2 {
+    font-size: 24px;
+    margin-bottom: 24px;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.faq-section h2 i {
+    color: var(--primary);
+}
+
+.faq-item {
+    background: var(--elev);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 16px;
+    overflow: hidden;
+}
+
+.faq-question {
+    padding: 20px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    color: var(--text);
+    transition: all 0.3s ease;
+}
+
+.faq-question:hover {
+    background: var(--surface);
+}
+
+.faq-answer {
+    padding: 0 20px;
+    max-height: 0;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    color: var(--muted);
+    line-height: 1.8;
+}
+
+.faq-item.active .faq-answer {
+    padding: 20px;
+    max-height: 500px;
+}
+
+.faq-item.active .faq-question i {
+    transform: rotate(180deg);
+}
+
+.guide-card {
+    background: var(--elev);
+    padding: 32px;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    margin-bottom: 24px;
+}
+
+.guide-card h3 {
+    font-size: 20px;
+    margin-bottom: 16px;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.guide-card h3 i {
+    color: var(--primary);
+}
+
+.guide-card ol,
+.guide-card ul {
+    color: var(--muted);
+    line-height: 1.8;
+    padding-left: 24px;
+}
+
+.guide-card li {
+    margin-bottom: 8px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="help-center">
+    <div class="help-container">
+        <div class="help-header">
+            <h1><i class="fas fa-question-circle"></i> Help Center</h1>
+            <p>Find answers to common questions and learn how to use UrbanVista</p>
+        </div>
+
+        <div class="search-box">
+            <input type="text" id="helpSearch" placeholder="Search for help...">
+            <i class="fas fa-search"></i>
+        </div>
+
+        <!-- Getting Started -->
+        <div class="faq-section">
+            <h2><i class="fas fa-rocket"></i> Getting Started</h2>
+            <div class="guide-card">
+                <h3><i class="fas fa-file-alt"></i> How to Submit a Report</h3>
+                <ol>
+                    <li>Click on "Report Issue" button in the navigation or dashboard</li>
+                    <li>Select the type of issue (Road, Water, Garbage, etc.)</li>
+                    <li>Enter a detailed description of the problem</li>
+                    <li>Provide the exact location where the issue is located</li>
+                    <li>Upload a photo if available (optional but recommended)</li>
+                    <li>Click "Submit Report" to send it to the authorities</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- FAQs -->
+        <div class="faq-section">
+            <h2><i class="fas fa-question"></i> Frequently Asked Questions</h2>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>How do I track my report status?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    You can track your report status by visiting "My Reports" in your dashboard. Each report shows its current status (Pending, In Progress, Resolved, etc.) and you'll receive email notifications when the status changes.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>How long does it take to resolve an issue?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    Resolution time varies depending on the type and complexity of the issue. Simple issues like garbage collection may be resolved within 24-48 hours, while infrastructure issues like road repairs may take longer. You can check the average resolution time in the Statistics page.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>Can I edit or delete my report?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    You can only edit or delete reports that are still in "Pending" status. Once a report is assigned or in progress, you cannot modify it. However, you can always add comments or additional information through attachments.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>What types of issues can I report?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    You can report various civic issues including: Road problems (potholes, damaged roads), Water leakage, Garbage collection issues, Broken streetlights, Sewage and drainage problems, and Other civic issues. Select "Other" if your issue doesn't fit the listed categories.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>Is my personal information safe?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    Yes, we take your privacy seriously. Your personal information is only shared with relevant municipal authorities for issue resolution purposes. We use industry-standard encryption and security measures to protect your data. Read our Privacy Policy for more details.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>How do I contact support?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    You can contact our support team through the Contact page. Fill out the contact form with your query and we'll get back to you within 24-48 hours. For urgent issues, you can also reach out to the relevant municipal department directly.
+                </div>
+            </div>
+        </div>
+
+        <!-- Guides -->
+        <div class="faq-section">
+            <h2><i class="fas fa-book"></i> Guides</h2>
+            
+            <div class="guide-card">
+                <h3><i class="fas fa-map-marker-alt"></i> Adding Location to Reports</h3>
+                <p>When submitting a report, be as specific as possible about the location:</p>
+                <ul>
+                    <li>Include the street name and area</li>
+                    <li>Mention nearby landmarks if available</li>
+                    <li>If you have GPS coordinates, the system will automatically capture them</li>
+                    <li>You can also click on the map to set the exact location</li>
+                </ul>
+            </div>
+
+            <div class="guide-card">
+                <h3><i class="fas fa-camera"></i> Taking Good Photos</h3>
+                <ul>
+                    <li>Take clear, well-lit photos of the issue</li>
+                    <li>Include multiple angles if possible</li>
+                    <li>Make sure the photo shows the problem clearly</li>
+                    <li>Include surrounding context to help authorities locate the issue</li>
+                </ul>
+            </div>
+
+            <div class="guide-card">
+                <h3><i class="fas fa-bell"></i> Managing Notifications</h3>
+                <p>You'll receive email notifications for:</p>
+                <ul>
+                    <li>When your report is submitted successfully</li>
+                    <li>When the status of your report changes</li>
+                    <li>When your report is resolved</li>
+                    <li>Important updates from authorities</li>
+                </ul>
+                <p>You can manage notification preferences in your account settings.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+function toggleFaq(element) {
+    const faqItem = element.closest('.faq-item');
+    const isActive = faqItem.classList.contains('active');
+    
+    // Close all FAQs
+    document.querySelectorAll('.faq-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    
+    // Open clicked FAQ if it wasn't active
+    if (!isActive) {
+        faqItem.classList.add('active');
+    }
+}
+
+// Search functionality
+document.getElementById('helpSearch').addEventListener('input', function(e) {
+    const searchTerm = e.target.value.toLowerCase();
+    const faqItems = document.querySelectorAll('.faq-item, .guide-card');
+    
+    faqItems.forEach(item => {
+        const text = item.textContent.toLowerCase();
+        if (text.includes(searchTerm)) {
+            item.style.display = '';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+});
+</script>
+{% endblock %}
+

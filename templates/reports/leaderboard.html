@@ -1,0 +1,320 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Leaderboard — UrbanVista{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+<link rel="stylesheet" href="{% static 'css/FreeContribution/fc-improvements.css' %}">
+<style>
+.leaderboard-page {
+    padding: 40px 20px;
+    background: var(--uv-c-surface-1, var(--surface, #121826));
+    min-height: 100vh;
+}
+
+.leaderboard-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.leaderboard-header {
+    text-align: center;
+    margin-bottom: 48px;
+}
+
+.leaderboard-header h1 {
+    font-size: clamp(32px, 5vw, 48px);
+    margin-bottom: 16px;
+    color: var(--text);
+    font-weight: 800;
+}
+
+.leaderboard-tabs {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+}
+
+.tab-btn {
+    padding: 12px 24px;
+    background: var(--elev);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    color: var(--text);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.tab-btn:hover,
+.tab-btn.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+}
+
+.leaderboard-section {
+    background: var(--elev);
+    padding: 32px;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    margin-bottom: 32px;
+}
+
+.leaderboard-section h2 {
+    font-size: 24px;
+    margin-bottom: 24px;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.leaderboard-section h2 i {
+    color: var(--primary);
+    font-size: 28px;
+}
+
+.leaderboard-list {
+    display: grid;
+    gap: 16px;
+}
+
+.leaderboard-item {
+    display: grid;
+    grid-template-columns: 60px 1fr auto auto;
+    gap: 16px;
+    align-items: center;
+    padding: 20px;
+    background: var(--surface);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    transition: all 0.3s ease;
+}
+
+.leaderboard-item:hover {
+    transform: translateX(4px);
+    border-color: var(--primary);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.rank {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-weight: 900;
+    font-size: 20px;
+}
+
+.rank.gold {
+    background: linear-gradient(135deg, #ffd700, #ffed4e);
+    color: #000;
+}
+
+.rank.silver {
+    background: linear-gradient(135deg, #c0c0c0, #e8e8e8);
+    color: #000;
+}
+
+.rank.bronze {
+    background: linear-gradient(135deg, #cd7f32, #e6a857);
+    color: #fff;
+}
+
+.rank.other {
+    background: var(--primary);
+    color: #fff;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.user-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    display: grid;
+    place-items: center;
+    color: #fff;
+    font-weight: 700;
+    font-size: 18px;
+}
+
+.user-details h3 {
+    margin: 0;
+    font-size: 18px;
+    color: var(--text);
+    font-weight: 600;
+}
+
+.user-details p {
+    margin: 4px 0 0;
+    font-size: 14px;
+    color: var(--muted);
+}
+
+.stats-col {
+    text-align: right;
+}
+
+.stat-value {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.stat-label {
+    font-size: 12px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+@media (max-width: 768px) {
+    .leaderboard-item {
+        grid-template-columns: 50px 1fr;
+        gap: 12px;
+    }
+    
+    .stats-col {
+        grid-column: 2;
+        text-align: left;
+        margin-top: 8px;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="leaderboard-page">
+    <div class="leaderboard-container">
+        <div class="leaderboard-header">
+            <h1><i class="fas fa-trophy"></i> Leaderboard</h1>
+            <p>Top contributors making a difference in Ahmedabad</p>
+        </div>
+
+        <div class="leaderboard-tabs">
+            <button class="tab-btn active" onclick="showTab('contributors')">Top Contributors</button>
+            <button class="tab-btn" onclick="showTab('resolved')">Most Resolved</button>
+            <button class="tab-btn" onclick="showTab('active')">Active This Month</button>
+        </div>
+
+        <!-- Top Contributors -->
+        <div id="contributors-tab" class="leaderboard-section tab-content active">
+            <h2><i class="fas fa-users"></i> Top Contributors</h2>
+            <div class="leaderboard-list">
+                {% for contributor in top_contributors %}
+                <div class="leaderboard-item">
+                    <div class="rank {% if forloop.counter == 1 %}gold{% elif forloop.counter == 2 %}silver{% elif forloop.counter == 3 %}bronze{% else %}other{% endif %}">
+                        {{ forloop.counter }}
+                    </div>
+                    <div class="user-info">
+                        <div class="user-avatar">
+                            {{ contributor.user__first_name|first|default:contributor.user__username|first|upper }}
+                        </div>
+                        <div class="user-details">
+                            <h3>{{ contributor.user__first_name|default:contributor.user__username }} {{ contributor.user__last_name|default:"" }}</h3>
+                            <p>@{{ contributor.user__username }}</p>
+                        </div>
+                    </div>
+                    <div class="stats-col">
+                        <div class="stat-value">{{ contributor.total_reports }}</div>
+                        <div class="stat-label">Total Reports</div>
+                    </div>
+                    <div class="stats-col">
+                        <div class="stat-value">{{ contributor.resolved_reports }}</div>
+                        <div class="stat-label">Resolved</div>
+                    </div>
+                </div>
+                {% empty %}
+                <p style="text-align: center; color: var(--muted); padding: 40px;">No contributors yet. Be the first!</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Most Resolved -->
+        <div id="resolved-tab" class="leaderboard-section tab-content" style="display: none;">
+            <h2><i class="fas fa-check-circle"></i> Highest Resolution Rate</h2>
+            <div class="leaderboard-list">
+                {% for user_data in most_resolved %}
+                <div class="leaderboard-item">
+                    <div class="rank other">{{ forloop.counter }}</div>
+                    <div class="user-info">
+                        <div class="user-avatar">
+                            {{ user_data.user.first_name|first|default:user_data.user.username|first|upper }}
+                        </div>
+                        <div class="user-details">
+                            <h3>{{ user_data.user.first_name|default:user_data.user.username }} {{ user_data.user.last_name|default:"" }}</h3>
+                            <p>@{{ user_data.user.username }}</p>
+                        </div>
+                    </div>
+                    <div class="stats-col">
+                        <div class="stat-value">{{ user_data.resolution_rate }}%</div>
+                        <div class="stat-label">Resolution Rate</div>
+                    </div>
+                    <div class="stats-col">
+                        <div class="stat-value">{{ user_data.resolved }}/{{ user_data.total }}</div>
+                        <div class="stat-label">Resolved/Total</div>
+                    </div>
+                </div>
+                {% empty %}
+                <p style="text-align: center; color: var(--muted); padding: 40px;">No data available yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Active This Month -->
+        <div id="active-tab" class="leaderboard-section tab-content" style="display: none;">
+            <h2><i class="fas fa-fire"></i> Active This Month</h2>
+            <div class="leaderboard-list">
+                {% for active in active_this_month %}
+                <div class="leaderboard-item">
+                    <div class="rank other">{{ forloop.counter }}</div>
+                    <div class="user-info">
+                        <div class="user-avatar">
+                            {{ active.user__first_name|first|default:active.user__username|first|upper }}
+                        </div>
+                        <div class="user-details">
+                            <h3>{{ active.user__first_name|default:active.user__username }} {{ active.user__last_name|default:"" }}</h3>
+                            <p>@{{ active.user__username }}</p>
+                        </div>
+                    </div>
+                    <div class="stats-col">
+                        <div class="stat-value">{{ active.count }}</div>
+                        <div class="stat-label">Reports This Month</div>
+                    </div>
+                </div>
+                {% empty %}
+                <p style="text-align: center; color: var(--muted); padding: 40px;">No activity this month yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+function showTab(tabName) {
+    // Hide all tabs
+    document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.style.display = 'none';
+    });
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Show selected tab
+    document.getElementById(tabName + '-tab').style.display = 'block';
+    event.target.classList.add('active');
+}
+</script>
+{% endblock %}
+

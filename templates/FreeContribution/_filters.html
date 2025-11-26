@@ -1,0 +1,7 @@
+<div class="filters">
+  <a class="btn {% if not active %}is-active{% endif %}" href="{% url 'freecontribution:experience_home' %}">All</a>
+  <a class="btn {% if active == 'place' %}is-active{% endif %}" href="{% url 'freecontribution:experience_list_by_type' 'place' %}">Places</a>
+  <a class="btn {% if active == 'activity' %}is-active{% endif %}" href="{% url 'freecontribution:experience_list_by_type' 'activity' %}">Activities</a>
+  <a class="btn {% if active == 'story' %}is-active{% endif %}" href="{% url 'freecontribution:experience_list_by_type' 'story' %}">Stories</a>
+  <a class="btn {% if active == 'tip' %}is-active{% endif %}" href="{% url 'freecontribution:experience_list_by_type' 'tip' %}">Tips</a>
+</div>

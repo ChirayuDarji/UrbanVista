@@ -1,0 +1,6 @@
+<nav class="form-actions" style="margin-bottom:12px">
+  <a class="btn btn-outline" href="{% url 'account_email' %}">{% trans "Change Email" %}</a>
+  <a class="btn btn-outline" href="{% url 'account_change_password' %}">{% trans "Change Password" %}</a>
+  <a class="btn btn-outline" href="{% url 'socialaccount_connections' %}">{% trans "Account Connections" %}</a>
+  <a class="btn btn-danger" href="{% url 'account_logout' %}">{% trans "Sign Out" %}</a>
+</nav>

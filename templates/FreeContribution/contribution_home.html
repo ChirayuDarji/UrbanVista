@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ page_title|default:"All Contributions" }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/FreeContribution/fc-home.css' %}">
+
+<!-- Leaflet CSS -->
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+  crossorigin=""
+/>
+{% endblock %}
+
+{% block content %}
+
+<!-- HERO -->
+<section class="fc-hero">
+  <video id="heroVideo" autoplay muted loop playsinline preload="metadata" poster="{% static 'images/hero-poster.jpg' %}">
+    <source src="{% static 'videos/hero.webm' %}" type="video/webm">
+    <source src="{% static 'videos/hero.mp4' %}" type="video/mp4">
+  </video>
+  <div class="overlay" aria-hidden="true"></div>
+  <div class="content container">
+    <h1>{{ page_title|default:"See your city clearly" }}</h1>
+    <p class="lead">{{ hero_subtitle|default:"Report incidents, track civic issues, and share local stories — together." }}</p>
+    <div class="cta">
+      <a class="btn btn-primary" href="{% url 'freecontribution:contribution_create_type' type_slug='incident' %}">Report an Issue</a>
+      <a class="btn" href="{% url 'freecontribution:contribution_create_type' type_slug='civic' %}">Create Civic Issue</a>
+    </div>
+    <button id="heroToggle" class="toggle" aria-pressed="true">Pause video</button>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="container" style="padding: 18px 0 6px;">
+  {% include "FreeContribution/_stats.html" %}
+</section>
+
+<!-- FILTERS -->
+<section class="container">
+  {% include "FreeContribution/_filters.html" %}
+</section>
+
+<!-- MAP -->
+<section class="container">
+  <header class="section-head">
+    <h2>City map</h2>
+  </header>
+
+  <div class="fc-map-wrap">
+    <div
+      id="fcMap"
+      role="region"
+      aria-label="Contribution map"
+      data-api="{% url 'freecontribution:contribution_map_data' %}"
+    ></div>
+
+    <div class="fc-map-controls">
+      <div class="btn-group" role="group" aria-label="Map filters">
+        <button class="btn btn-outline" data-map-filter value="" aria-pressed="true">All</button>
+        <button class="btn btn-outline" data-map-filter value="incident" aria-pressed="false">Incidents</button>
+        <button class="btn btn-outline" data-map-filter value="event" aria-pressed="false">Events</button>
+        <button class="btn btn-outline" data-map-filter value="civic" aria-pressed="false">Civic</button>
+        <button class="btn btn-outline" data-map-filter value="news" aria-pressed="false">News</button>
+      </div>
+      <div class="fc-legend">
+        <span><span class="dot dot-i"></span> Incident</span>
+        <span><span class="dot dot-e"></span> Event</span>
+        <span><span class="dot dot-c"></span> Civic</span>
+        <span><span class="dot dot-n"></span> News</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURED GRID -->
+<section class="container" style="padding: 16px 0 8px;">
+  <header class="section-head">
+    <h2>Featured</h2>
+    <a class="btn" href="{% url 'freecontribution:contribution_home' %}">See all</a>
+  </header>
+
+  {% if contributions and contributions|length %}
+    <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;">
+      {% for c in contributions %}
+        {% include "FreeContribution/_card.html" with c=c %}
+      {% endfor %}
+    </div>
+  {% else %}
+    {% include "FreeContribution/_empty_state.html" with message="No contributions yet. Be the first to add one!" %}
+  {% endif %}
+
+  {% include "FreeContribution/_pagination.html" with page_obj=page_obj %}
+</section>
+
+<!-- GALLERY -->
+<section class="container" style="padding: 16px 0;">
+  <header class="section-head">
+    <h2>City gallery</h2>
+    <p class="muted" style="margin:0;">Recent photos from the community</p>
+  </header>
+
+  <div class="masonry" id="gallery">
+    {% for g in contributions %}
+      {% if g.image %}
+        <a class="tile" href="{{ g.image.url }}" data-lightbox data-title="{{ g.title|default:'Contribution image' }}">
+          <img src="{{ g.image.url }}" alt="" loading="lazy">
+        </a>
+      {% endif %}
+    {% empty %}
+      <div class="empty" style="padding:20px;border:1px dashed var(--border);border-radius:12px;text-align:center;">
+        <p class="muted">No images yet. Upload a photo with your report to feature here.</p>
+      </div>
+    {% endfor %}
+  </div>
+
+  <dialog id="lightbox" class="lightbox" aria-label="Image">
+    <img id="lightboxImg" alt="">
+    <button class="lightbox-close" data-close aria-label="Close">×</button>
+  </dialog>
+</section>
+
+<!-- VIDEOS -->
+<section class="container" style="padding: 8px 0 24px;">
+  <header class="section-head">
+    <h2>Videos & stories</h2>
+    <p class="muted" style="margin:0;">Clips from events and updates</p>
+  </header>
+
+  <div class="vids">
+    <!-- Replace with real videos if you store them in ContributionMedia -->
+    <article class="vid-card">
+      <video controls preload="metadata" poster="{% static 'images/video-poster.jpg' %}">
+        <source src="{% static 'videos/sample.mp4' %}" type="video/mp4">
+      </video>
+      <h3>Community highlights</h3>
+    </article>
+    <article class="vid-card">
+      <video controls preload="metadata" poster="{% static 'images/video-poster.jpg' %}">
+        <source src="{% static 'videos/sample2.mp4' %}" type="video/mp4">
+      </video>
+      <h3>Local events</h3>
+    </article>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<!-- Leaflet JS -->
+<script
+  src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+  crossorigin=""
+  defer
+></script>
+
+<!-- Page-specific JS -->
+<script src="{% static 'js/FreeContribution/fc-home.js' %}" defer></script>
+{% endblock %}

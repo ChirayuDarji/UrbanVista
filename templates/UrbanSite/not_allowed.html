@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ title }} — UrbanVista{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+<style>
+.not-allowed-section {
+    padding: 60px 0;
+    background: var(--uv-c-surface-1, var(--surface, #121826));
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.not-allowed-container {
+    max-width: 600px;
+    margin: 0 auto;
+    background: var(--uv-c-surface-2, var(--elev, #151c2e));
+    padding: 48px 32px;
+    border-radius: 12px;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border, #273043);
+    text-align: center;
+}
+.error-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 24px;
+    background: rgba(239, 68, 68, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ef4444;
+    font-size: 40px;
+}
+.not-allowed-container h1 {
+    font-size: clamp(28px, 4vw, 36px);
+    margin-bottom: 16px;
+    color: var(--text, #e9edf6);
+}
+.not-allowed-container p {
+    color: var(--muted, #a3adc2);
+    font-size: 18px;
+    margin-bottom: 32px;
+    line-height: 1.6;
+}
+.info-box {
+    background: rgba(14, 165, 233, 0.1);
+    border: 1px solid var(--primary, #0ea5e9);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 32px;
+    text-align: left;
+}
+.info-box h3 {
+    font-size: 18px;
+    color: var(--text, #e9edf6);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.info-box ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    color: var(--muted, #a3adc2);
+}
+.info-box li {
+    padding: 8px 0;
+    padding-left: 24px;
+    position: relative;
+}
+.info-box li:before {
+    content: "•";
+    position: absolute;
+    left: 8px;
+    color: var(--primary, #0ea5e9);
+    font-weight: bold;
+}
+.action-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+.btn {
+    padding: 12px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+}
+.btn-primary {
+    background: var(--primary, #0ea5e9);
+    color: #0b1018;
+    border: 1px solid var(--primary, #0ea5e9);
+}
+.btn-primary:hover {
+    background: color-mix(in srgb, var(--primary, #0ea5e9) 85%, #000 15%);
+    transform: translateY(-2px);
+}
+.btn-secondary {
+    background: transparent;
+    color: var(--text, #e9edf6);
+    border: 1px solid var(--border, #273043);
+}
+.btn-secondary:hover {
+    background: var(--surface, #121826);
+    transform: translateY(-2px);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="not-allowed-section">
+    <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+        <div class="not-allowed-container">
+            <div class="error-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h1>{{ title|default:"Reporting Not Available" }}</h1>
+            <p>We're sorry, but reporting is currently limited to Ahmedabad only.</p>
+
+            <div class="info-box">
+                <h3>
+                    <i class="fas fa-map-marker-alt"></i>
+                    Ahmedabad Pincode Range
+                </h3>
+                <ul>
+                    <li>Valid pincodes: 380001 to 380060</li>
+                    <li>Only reports from Ahmedabad will be processed</li>
+                    <li>Please ensure your pincode is within this range</li>
+                </ul>
+            </div>
+
+            <div class="action-buttons">
+                <a href="{% url 'urbansite:report_issue' %}" class="btn btn-primary">
+                    <i class="fas fa-arrow-left"></i> Try Again
+                </a>
+                <a href="{% url 'home' %}" class="btn btn-secondary">
+                    <i class="fas fa-home"></i> Back to Home
+                </a>
+            </div>
+
+            <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border, #273043);">
+                <p style="font-size: 14px; color: var(--muted, #a3adc2);">
+                    <i class="fas fa-info-circle"></i> 
+                    If you believe this is an error, please contact support with your pincode details.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+

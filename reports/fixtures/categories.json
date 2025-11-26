@@ -1,0 +1,22 @@
+[
+  {"model": "reports.category", "pk": 1, "fields": {
+    "name": "Roads & Potholes", "description": "Road damage, potholes, cracks",
+    "icon_class": "bi-cone-striped", "department_name": "Roads & Buildings",
+    "department_email": "roads@amc.gov.in", "priority_level": 3, "is_active": true
+  }},
+  {"model": "reports.category", "pk": 2, "fields": {
+    "name": "Water Supply", "description": "Leaks, low pressure, contamination",
+    "icon_class": "bi-droplet", "department_name": "Water Supply & Sewerage",
+    "department_email": "water@amc.gov.in", "priority_level": 3, "is_active": true
+  }},
+  {"model": "reports.category", "pk": 3, "fields": {
+    "name": "Drainage & Sewerage", "description": "Drain blockage, overflow",
+    "icon_class": "bi-droplet-half", "department_name": "Water Supply & Sewerage",
+    "department_email": "drainage@amc.gov.in", "priority_level": 3, "is_active": true
+  }},
+  {"model": "reports.category", "pk": 4, "fields": {
+    "name": "Garbage Collection", "description": "Missed pickups, overflowing bins",
+    "icon_class": "bi-trash", "department_name": "Solid Waste Management",
+    "department_email": "swm@amc.gov.in", "priority_level": 2, "is_active": true
+  }}
+]

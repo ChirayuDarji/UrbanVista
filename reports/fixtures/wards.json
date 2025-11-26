@@ -1,0 +1,18 @@
+[
+  {"ward_number": 1, "ward_name": "Sabarmati", "zone": "NORTH"},
+  {"ward_number": 2, "ward_name": "Chandkheda", "zone": "NORTH"},
+  {"ward_number": 3, "ward_name": "Motera", "zone": "NORTH"},
+  {"ward_number": 4, "ward_name": "Ranip", "zone": "NORTH"},
+  {"ward_number": 5, "ward_name": "Maninagar", "zone": "SOUTH"},
+  {"ward_number": 6, "ward_name": "Vatva", "zone": "SOUTH"},
+  {"ward_number": 7, "ward_name": "Odhav", "zone": "SOUTH"},
+  {"ward_number": 8, "ward_name": "Nikol", "zone": "SOUTH"},
+  {"ward_number": 9, "ward_name": "Ellisbridge", "zone": "WEST"},
+  {"ward_number": 10, "ward_name": "Paldi", "zone": "WEST"},
+  {"ward_number": 11, "ward_name": "Navrangpura", "zone": "WEST"},
+  {"ward_number": 12, "ward_name": "Vasna", "zone": "WEST"},
+  {"ward_number": 13, "ward_name": "Jamalpur", "zone": "CENTRAL"},
+  {"ward_number": 14, "ward_name": "Shahpur", "zone": "CENTRAL"},
+  {"ward_number": 15, "ward_name": "Dariapur", "zone": "CENTRAL"},
+  {"ward_number": 16, "ward_name": "Kalupur", "zone": "CENTRAL"}
+]

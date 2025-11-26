@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ experience.title }}{% endblock %}
+
+{% block content %}
+<section class="container" style="padding: 20px 0 28px; max-width: 980px;">
+  <article class="card" style="border:1px solid var(--border);border-radius:12px;background:var(--surface);overflow:hidden;">
+    {% if experience.image %}
+      <div style="aspect-ratio: 16/6; background:#111;">
+        <img src="{{ experience.image.url }}" alt="" style="width:100%;height:100%;object-fit:cover;" loading="lazy">
+      </div>
+    {% endif %}
+
+    <div style="padding:16px; display:grid; gap:12px;">
+      <header style="display:grid;gap:8px;">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+          <span class="badge" style="padding:4px 8px;border-radius:999px;border:1px solid var(--nav-border);">{{ experience.get_experience_type_display }}</span>
+          {% if experience.category %}
+            <span class="badge" style="padding:4px 8px;border-radius:999px;border:1px solid var(--nav-border);">{{ experience.get_category_display }}</span>
+          {% endif %}
+        </div>
+        <h1 style="margin:0;">{{ experience.title }}</h1>
+        <div class="muted" style="display:flex;gap:14px;flex-wrap:wrap;font-size:14px;color:var(--muted);">
+          <span>By {{ experience.user.get_full_name|default:experience.user.username }}</span>
+          <span>•</span>
+          <span>{{ experience.created_at|date:"M j, Y" }}</span>
+          {% if experience.location %}<span>•</span><span>{{ experience.location }}</span>{% endif %}
+        </div>
+      </header>
+
+      {% if experience.media_files.all %}
+  <div class="media-gallery" style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;">
+    {% for media in experience.media_files.all %}
+      {% if media.media_type == 'image' %}
+        <img src="{{ media.file.url }}" alt="{{ media.caption }}" style="width:180px;height:120px;object-fit:cover;border-radius:8px;">
+      {% elif media.media_type == 'video' %}
+        <video controls style="width:180px;height:120px;border-radius:8px;">
+          <source src="{{ media.file.url }}">
+          Your browser does not support the video tag.
+        </video>
+      {% endif %}
+    {% endfor %}
+  </div>
+{% endif %}
+
+      <div class="prose">
+        <p style="white-space:pre-line;">{{ experience.description }}</p>
+      </div>
+
+      {% if experience.latitude and experience.longitude %}
+        <div style="margin-top:8px;">
+          <iframe
+            title="Location map"
+            width="100%"
+            height="280"
+            style="border:0;border-radius:10px"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            src="https://www.openstreetmap.org/export/embed.html?bbox={{ experience.longitude|floatformat:6 }},{{ experience.latitude|floatformat:6 }},{{ experience.longitude|floatformat:6 }},{{ experience.latitude|floatformat:6 }}&layer=mapnik&marker={{ experience.latitude|floatformat:6 }},{{ experience.longitude|floatformat:6 }}">
+          </iframe>
+        </div>
+      {% endif %}
+
+      <footer style="display:flex;gap:10px;align-items:center;justify-content:space-between;margin-top:8px;">
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button
+            class="btn {% if is_upvoted %}is-active{% endif %}"
+            data-upvote-btn
+            data-url="{% url 'freecontribution:toggle_experience_upvote' pk=experience.pk %}"
+            aria-pressed="{{ is_upvoted|yesno:'true,false' }}">
+            <span>▲</span>
+            <span data-count>{{ experience.upvotes_count }}</span>
+          </button>
+          <span class="muted" style="font-size:14px;color:var(--muted);">Comments: {{ experience.comments_count }} • Views: {{ experience.views_count }}</span>
+        </div>
+        <a class="btn" href="{% url 'freecontribution:experience_home' %}">Back</a>
+      </footer>
+
+      <!-- COMMENTS SECTION -->
+      <div class="comments-section" style="margin-top:32px;">
+        <h2 style="margin-bottom:12px;">Comments ({{ experience.comments_count }})</h2>
+        {% if user.is_authenticated %}
+          <form method="post" style="margin-bottom:24px;">
+            {% csrf_token %}
+            {{ comment_form.non_field_errors }}
+            <div>
+              {{ comment_form.comment.errors }}
+              {{ comment_form.comment }}
+            </div>
+            <button type="submit" class="btn" style="margin-top:8px;">Post Comment</button>
+          </form>
+        {% else %}
+          <p><a href="{% url 'login' %}?next={{ request.path }}">Log in</a> to comment.</p>
+        {% endif %}
+
+        <div class="comments-list" style="display:grid;gap:18px;">
+          {% for comment in comments %}
+            <div class="comment" style="padding:12px 0;border-bottom:1px solid var(--border);">
+              <div style="font-size:15px;">
+                <strong>{{ comment.user.get_full_name|default:comment.user.username }}</strong>
+                <span class="muted" style="font-size:13px;">{{ comment.created_at|date:"M j, Y H:i" }}</span>
+              </div>
+              <div style="margin-top:4px;white-space:pre-line;">{{ comment.comment }}</div>
+            </div>
+          {% empty %}
+            <p class="muted">No comments yet.</p>
+          {% endfor %}
+        </div>
+      </div>
+      <!-- END COMMENTS SECTION -->
+
+    </div>
+  </article>
+</section>
+
+<script>
+  // Upvote on detail
+  (function(){
+    function getCookie(name){
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(";").shift();
+    }
+    document.addEventListener("click", async (e) => {
+      const btn = e.target.closest("[data-upvote-btn]");
+      if(!btn) return;
+      e.preventDefault();
+      const url = btn.getAttribute("data-url");
+      try {
+        const res = await fetch(url, {
+          method: "POST",
+          headers: {
+            "X-CSRFToken": getCookie("csrftoken"),
+            "Accept": "application/json",
+          },
+          credentials: "same-origin"
+        });
+        if (res.redirected) { window.location = res.url; return; }
+        const data = await res.json();
+        if(data && data.upvoted !== undefined){
+          btn.classList.toggle("is-active", !!data.upvoted);
+          const cnt = btn.querySelector("[data-count]");
+          if (cnt) cnt.textContent = data.upvotes_count;
+          btn.setAttribute("aria-pressed", data.upvoted ? "true" : "false");
+        }
+      } catch(err){ console.error(err); }
+    });
+  })();
+</script>
+{% endblock %}

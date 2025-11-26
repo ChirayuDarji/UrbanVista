@@ -1,0 +1,316 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ title }} — UrbanVista{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+<style>
+.form-page {
+    padding: 40px 20px;
+    background: var(--uv-c-surface-1, var(--surface, #121826));
+    min-height: 100vh;
+}
+
+.form-container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.form-header {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.form-header h1 {
+    font-size: clamp(28px, 4vw, 36px);
+    margin-bottom: 8px;
+    color: var(--text);
+    font-weight: 800;
+}
+
+.project-form {
+    background: var(--elev);
+    padding: 40px;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+}
+
+.form-group {
+    margin-bottom: 24px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text);
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 12px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 16px;
+    font-family: inherit;
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 32px;
+    justify-content: flex-end;
+}
+
+.btn {
+    padding: 12px 24px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background: color-mix(in srgb, var(--primary) 85%, #000);
+    transform: translateY(-2px);
+}
+
+.btn-outline {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
+}
+
+.btn-outline:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.checkbox-group input[type="checkbox"] {
+    width: auto;
+}
+
+@media (max-width: 768px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="form-page">
+    <div class="form-container">
+        <div class="form-header">
+            <h1><i class="fas fa-plus-circle"></i> {{ title }}</h1>
+        </div>
+
+        <form method="post" enctype="multipart/form-data" class="project-form">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="{{ form.title.id_for_label }}">Project Title *</label>
+                {{ form.title }}
+                {% if form.title.errors %}
+                <div style="color: var(--error, #ef4444); font-size: 14px; margin-top: 4px;">{{ form.title.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.short_description.id_for_label }}">Short Description</label>
+                {{ form.short_description }}
+                <small style="color: var(--muted); font-size: 12px;">Brief summary (max 300 characters)</small>
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.description.id_for_label }}">Full Description *</label>
+                {{ form.description }}
+                {% if form.description.errors %}
+                <div style="color: var(--error, #ef4444); font-size: 14px; margin-top: 4px;">{{ form.description.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="{{ form.category.id_for_label }}">Category</label>
+                    {{ form.category }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.status.id_for_label }}">Status</label>
+                    {{ form.status }}
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="{{ form.priority.id_for_label }}">Priority</label>
+                    {{ form.priority }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.progress_percentage.id_for_label }}">Progress (%)</label>
+                    {{ form.progress_percentage }}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.location.id_for_label }}">Location *</label>
+                {{ form.location }}
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="{{ form.ward.id_for_label }}">Ward</label>
+                    {{ form.ward }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.latitude.id_for_label }}">Coordinates (Optional)</label>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                        {{ form.latitude }}
+                        {{ form.longitude }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="{{ form.start_date.id_for_label }}">Start Date</label>
+                    {{ form.start_date }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.expected_completion_date.id_for_label }}">Expected Completion</label>
+                    {{ form.expected_completion_date }}
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="{{ form.estimated_budget.id_for_label }}">Estimated Budget (₹)</label>
+                    {{ form.estimated_budget }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.actual_cost.id_for_label }}">Actual Cost (₹)</label>
+                    {{ form.actual_cost }}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.department.id_for_label }}">Department</label>
+                {{ form.department }}
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="{{ form.project_manager.id_for_label }}">Project Manager</label>
+                    {{ form.project_manager }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.contact_email.id_for_label }}">Contact Email</label>
+                    {{ form.contact_email }}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.contact_phone.id_for_label }}">Contact Phone</label>
+                {{ form.contact_phone }}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.featured_image.id_for_label }}">Featured Image</label>
+                {{ form.featured_image }}
+                {% if project and project.featured_image %}
+                <div style="margin-top: 8px;">
+                    <img src="{{ project.featured_image.url }}" alt="Current image" style="max-width: 200px; border-radius: 8px;">
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.benefits.id_for_label }}">Benefits</label>
+                {{ form.benefits }}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.challenges.id_for_label }}">Challenges</label>
+                {{ form.challenges }}
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        {{ form.is_public }}
+                        <label for="{{ form.is_public.id_for_label }}" style="margin: 0;">Make project public</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        {{ form.allow_comments }}
+                        <label for="{{ form.allow_comments.id_for_label }}" style="margin: 0;">Allow comments</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <a href="{% if project %}{% url 'projects:detail' project.slug %}{% else %}{% url 'projects:list' %}{% endif %}" class="btn btn-outline">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Save Project
+                </button>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}
+

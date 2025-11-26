@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}City News{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/news/news.css' %}">
+<link rel="stylesheet" href="{% static 'css/FreeContribution/fc-improvements.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<!-- Scroll Progress Bar -->
+<div class="scroll-progress" id="scroll-progress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+  <div class="scroll-progress-bar"></div>
+</div>
+
+<!-- Floating CTA -->
+<div class="floating-cta" id="floating-cta">
+  {% if user.is_staff %}
+    <a href="{% url 'news:create' %}" class="btn btn-primary">
+      <i class="fas fa-plus-circle"></i>
+      <span>Create News</span>
+    </a>
+  {% else %}
+    <a href="{% url 'news:list' %}" class="btn btn-primary">
+      <i class="fas fa-newspaper"></i>
+      <span>Latest News</span>
+    </a>
+  {% endif %}
+</div>
+
+<!-- Section Navigation Dots -->
+<nav class="section-nav-dots" aria-label="Page sections">
+  <a href="#hero" class="nav-dot active" data-section="hero" aria-label="Go to hero section">
+    <span class="dot-tooltip">Hero</span>
+  </a>
+  <a href="#featured" class="nav-dot" data-section="featured" aria-label="Go to featured section">
+    <span class="dot-tooltip">Featured</span>
+  </a>
+  <a href="#latest" class="nav-dot" data-section="latest" aria-label="Go to latest section">
+    <span class="dot-tooltip">Latest</span>
+  </a>
+</nav>
+
+<!-- HERO -->
+<section class="fc-hero reveal" id="hero" style="min-height: 40vh;">
+  <div class="overlay"></div>
+  <div class="content container">
+    <h1>Ahmedabad News</h1>
+    <p class="lead">Stay informed about the latest civic developments and city updates</p>
+  </div>
+</section>
+
+<!-- Section Divider -->
+<div class="section-divider"></div>
+
+<div class="container mt-4 reveal" id="filters">
+    <h1 class="mb-3 sr-only">Ahmedabad News</h1>
+    <form method="get" class="mb-4" style="display:flex;gap:10px;flex-wrap:wrap;align-items:end;">
+        <div style="min-width:220px;">
+            <label for="category" class="form-label">Category</label>
+            <select id="category" name="category" class="form-select">
+                <option value="">All Categories</option>
+                {% for cat in categories %}
+                    <option value="{{ cat.slug }}" {% if active_category == cat.slug %}selected{% endif %}>{{ cat.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div style="flex:1;min-width:220px;">
+            <label for="q" class="form-label">Search</label>
+            <input id="q" name="q" value="{{ q }}" class="form-control" placeholder="Search headlines or content">
+        </div>
+        <div>
+            <button class="btn btn-primary" type="submit">Apply</button>
+        </div>
+    </form>
+    {% if featured %}
+    <div class="mb-4 reveal" id="featured">
+        <header class="section-head">
+          <div>
+            <h3>Featured Stories</h3>
+            <p class="section-subtitle muted">Top stories you shouldn't miss</p>
+          </div>
+        </header>
+        <div class="grid">
+            {% for article in featured %}
+            <div class="card h-100">
+                {% if article.featured_image %}
+                    <img src="{{ article.featured_image.url }}" class="card-img-top" alt="{{ article.title }}" loading="lazy" decoding="async">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ article.title }}</h5>
+                    <p class="card-text">{{ article.excerpt|default:article.content|truncatechars:100 }}</p>
+                    <a href="{% url 'news:detail' article.slug %}" class="btn btn-outline btn-sm">Read More</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <!-- Section Divider -->
+    <div class="section-divider"></div>
+    {% endif %}
+    <div class="reveal" id="latest">
+      <header class="section-head">
+        <div>
+          <h3>Latest News</h3>
+          <p class="section-subtitle muted">Recent updates from Ahmedabad</p>
+        </div>
+      </header>
+    <div class="grid">
+        {% for article in page_obj %}
+            <div class="card">
+                {% if article.featured_image %}
+                    <img src="{{ article.featured_image.url }}" class="card-img-top" alt="{{ article.title }}" loading="lazy" decoding="async">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ article.title }}</h5>
+                    <span class="badge badge-primary">{{ article.category.name }}</span>
+                    <p class="card-text">{{ article.excerpt|default:article.content|truncatechars:120 }}</p>
+                    <a href="{% url 'news:detail' article.slug %}" class="btn btn-outline btn-sm">Read More</a>
+                </div>
+                <div class="card-footer muted">
+                    Published: {{ article.published_at|date:"d M Y, H:i" }}
+                </div>
+            </div>
+        {% empty %}
+            <div class="alert alert-info">No news articles yet.</div>
+        {% endfor %}
+    </div>
+    {% if page_obj and page_obj.paginator.num_pages > 1 %}
+    <nav class="mt-3" aria-label="Pagination">
+        <ul class="pagination">
+            {% if page_obj.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&category={{ active_category }}&q={{ q }}">Previous</a></li>
+            {% else %}
+                <li class="page-item disabled"><span class="page-link">Previous</span></li>
+            {% endif %}
+            <li class="page-item disabled"><span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span></li>
+            {% if page_obj.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&category={{ active_category }}&q={{ q }}">Next</a></li>
+            {% else %}
+                <li class="page-item disabled"><span class="page-link">Next</span></li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+
+<!-- Mobile Bottom Navigation -->
+<nav class="mobile-bottom-nav" id="mobile-bottom-nav" aria-label="Mobile navigation">
+  <a href="#hero" class="mobile-nav-item active" data-section="hero">
+    <i class="fas fa-home"></i>
+    <span>Home</span>
+  </a>
+  <a href="#featured" class="mobile-nav-item" data-section="featured">
+    <i class="fas fa-star"></i>
+    <span>Featured</span>
+  </a>
+  {% if user.is_staff %}
+    <a href="{% url 'news:create' %}" class="mobile-nav-item mobile-nav-create">
+      <i class="fas fa-plus-circle"></i>
+      <span>Create</span>
+    </a>
+  {% else %}
+    <a href="{% url 'news:list' %}" class="mobile-nav-item mobile-nav-create">
+      <i class="fas fa-newspaper"></i>
+      <span>News</span>
+    </a>
+  {% endif %}
+  <a href="#latest" class="mobile-nav-item" data-section="latest">
+    <i class="fas fa-list"></i>
+    <span>Latest</span>
+  </a>
+  <a href="#filters" class="mobile-nav-item" data-section="filters">
+    <i class="fas fa-filter"></i>
+    <span>Filter</span>
+  </a>
+</nav>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/FreeContribution/fc-home.js' %}" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Initialize scroll progress, floating CTA, section nav, mobile nav
+  if (typeof initScrollProgress === 'function') initScrollProgress();
+  if (typeof initFloatingCTA === 'function') initFloatingCTA();
+  if (typeof initSectionNavDots === 'function') initSectionNavDots();
+  if (typeof initMobileBottomNav === 'function') initMobileBottomNav();
+  if (typeof initScrollReveal === 'function') initScrollReveal();
+});
+</script>
+{% endblock %}

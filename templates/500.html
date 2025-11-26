@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Server Error - UrbanVista{% endblock %}
+{% block extra_css %}
+<style>
+.error-page {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+.error-code {
+  font-size: clamp(80px, 15vw, 120px);
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--error, #ef4444), var(--warning, #f59e0b));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin-bottom: 20px;
+  line-height: 1;
+}
+.error-title {
+  font-size: clamp(24px, 4vw, 32px);
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+.error-message {
+  font-size: 18px;
+  color: var(--muted);
+  margin-bottom: 32px;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.error-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.error-icon {
+  font-size: 120px;
+  color: var(--error, #ef4444);
+  opacity: 0.2;
+  margin-bottom: 20px;
+}
+</style>
+{% endblock %}
+{% block content %}
+<section class="error-page">
+  <div class="container">
+    <div class="error-icon">
+      <i class="fas fa-server"></i>
+    </div>
+    <div class="error-code">500</div>
+    <h1 class="error-title">Server Error</h1>
+    <p class="error-message">Something went wrong on our end. Our team has been notified and is working on fixing it. Please try again later.</p>
+    <div class="error-actions">
+      <a class="btn btn-primary" href="{% url 'home' %}">
+        <i class="fas fa-home"></i> Go Home
+      </a>
+      <a class="btn btn-outline" href="javascript:location.reload()">
+        <i class="fas fa-redo"></i> Reload Page
+      </a>
+    </div>
+  </div>
+</section>
+{% endblock %}
+

@@ -1,0 +1,269 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Submit a Civic Issue{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/reports/reports-theme.css' %}">
+<style>
+/* You can keep your custom responsive tweaks here if needed */
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="container" style="max-width:700px;padding: 20px 0 28px;">
+  <header style="margin-bottom:16px;">
+    <h1 style="margin:0;">Submit a Civic Issue</h1>
+    <p class="muted">Help improve your city by reporting civic problems.</p>
+  </header>
+
+  <form method="post" enctype="multipart/form-data" class="card" style="display:grid;gap:14px;padding:16px;">
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+      <div class="alert alert-danger">
+        {{ form.non_field_errors }}
+      </div>
+    {% endif %}
+
+    <div class="grid-2" style="display:grid;gap:12px;grid-template-columns:1fr 1fr;">
+      <div class="field">
+        {{ form.issue_type.label_tag }}
+        {{ form.issue_type }}
+        {{ form.issue_type.errors }}
+      </div>
+      <!-- Conditional Other Issue field -->
+      <div class="field" id="other-issue-field" style="display:none;">
+        {{ form.other_issue.label_tag }}
+        {{ form.other_issue }}
+        {{ form.other_issue.errors }}
+      </div>
+      <div class="field">
+        {{ form.image.label_tag }}
+        {{ form.image }}
+        {{ form.image.errors }}
+      </div>
+      <div class="field" style="grid-column:1/-1;">
+        {{ form.description.label_tag }}
+        {{ form.description }}
+        {{ form.description.errors }}
+      </div>
+      <div class="field" style="grid-column:1/-1;">
+        {{ form.location.label_tag }}
+        <div style="display:flex;gap:8px;align-items:center;position:relative;">
+          {{ form.location }}
+          <div id="location-suggestions" style="position:absolute;top:100%;left:0;right:0;z-index:10;background:#fff;border:1px solid #ccc;max-height:180px;overflow-y:auto;display:none;"></div>
+          <button type="button" class="btn" id="search-location-btn" title="Search address" tabindex="-1">🔍</button>
+          <button type="button" class="btn" id="current-location-btn" title="Use current location" tabindex="-1">📍</button>
+        </div>
+        <small id="location-msg" class="form-text"></small>
+        {{ form.location.errors }}
+      </div>
+      <div class="field">
+        {{ form.latitude.label_tag }}
+        {{ form.latitude }}
+        {{ form.latitude.errors }}
+      </div>
+      <div class="field">
+        {{ form.longitude.label_tag }}
+        {{ form.longitude }}
+        {{ form.longitude.errors }}
+      </div>
+      <div class="field" style="grid-column:1/-1;">
+        <label for="id_attachments">Additional Files (images, PDFs, etc.)</label>
+        <input type="file" name="attachments" id="id_attachments" class="form-control" multiple>
+        {% if attachment_errors %}
+          <ul class="text-danger">
+            {% for error in attachment_errors %}
+              <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+        <small class="form-text">
+          You can select multiple files. Max size: 10MB each. Allowed: images, PDFs.
+        </small>
+      </div>
+    </div>
+
+    <div style="grid-column:1/-1;">
+      <div id="location-map"></div>
+    </div>
+
+    <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;">
+      <a class="btn btn-outline" href="{% url 'reports:report_list' %}">Cancel</a>
+      <button class="btn btn-primary" type="submit">Submit</button>
+    </div>
+  </form>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // --- Show/hide "Other Issue" field ---
+  var issueType = document.getElementById('id_issue_type');
+  var otherField = document.getElementById('other-issue-field');
+  function toggleOtherField() {
+      if (issueType.value === 'other') {
+          otherField.style.display = '';
+      } else {
+          otherField.style.display = 'none';
+          var input = otherField.querySelector('input');
+          if (input) input.value = '';
+      }
+  }
+  if (issueType) {
+      issueType.addEventListener('change', toggleOtherField);
+      toggleOtherField();
+  }
+
+  // --- Location/Map JS ---
+  const locationInput = document.getElementById('id_location');
+  const latInput = document.getElementById('id_latitude');
+  const lngInput = document.getElementById('id_longitude');
+  const msg = document.getElementById('location-msg');
+  const searchBtn = document.getElementById('search-location-btn');
+  const currentBtn = document.getElementById('current-location-btn');
+  const suggestionsBox = document.getElementById('location-suggestions');
+  const mapDiv = document.getElementById('location-map');
+
+  function showMsg(text, color='#888') {
+    msg.textContent = text;
+    msg.style.color = color;
+  }
+
+  let map = L.map(mapDiv).setView([23.0225, 72.5714], 12); // Centered on Ahmedabad
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+  let marker = null;
+
+  function setMapMarker(lat, lng, zoom=15) {
+    if (marker) {
+      marker.setLatLng([lat, lng]);
+    } else {
+      marker = L.marker([lat, lng], {draggable: true}).addTo(map);
+      marker.on('dragend', function(e) {
+        const pos = marker.getLatLng();
+        latInput.value = pos.lat.toFixed(6);
+        lngInput.value = pos.lng.toFixed(6);
+        showMsg('Marker moved. Coordinates updated.', 'green');
+      });
+    }
+    map.setView([lat, lng], zoom);
+  }
+
+  if (latInput.value && lngInput.value) {
+    setMapMarker(parseFloat(latInput.value), parseFloat(lngInput.value));
+  }
+
+  let debounceTimeout = null;
+  locationInput.addEventListener('input', function() {
+    const query = locationInput.value.trim();
+    if (debounceTimeout) clearTimeout(debounceTimeout);
+    if (!query) {
+      suggestionsBox.style.display = 'none';
+      return;
+    }
+    debounceTimeout = setTimeout(() => {
+      fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&addressdetails=1&limit=5`)
+        .then(res => res.json())
+        .then(data => {
+          suggestionsBox.innerHTML = '';
+          if (data.length === 0) {
+            suggestionsBox.style.display = 'none';
+            return;
+          }
+          data.forEach(item => {
+            const div = document.createElement('div');
+            div.textContent = item.display_name;
+            div.style.padding = '6px 10px';
+            div.style.cursor = 'pointer';
+            div.addEventListener('mousedown', function(e) {
+              e.preventDefault();
+              locationInput.value = item.display_name;
+              latInput.value = item.lat;
+              lngInput.value = item.lon;
+              setMapMarker(item.lat, item.lon);
+              suggestionsBox.style.display = 'none';
+              showMsg('Location selected from suggestions.', 'green');
+            });
+            suggestionsBox.appendChild(div);
+          });
+          suggestionsBox.style.display = 'block';
+        });
+    }, 300);
+  });
+
+  document.addEventListener('mousedown', function(e) {
+    if (!suggestionsBox.contains(e.target) && e.target !== locationInput) {
+      suggestionsBox.style.display = 'none';
+    }
+  });
+
+  searchBtn.addEventListener('click', function() {
+    const address = locationInput.value.trim();
+    if (!address) {
+      showMsg('Please enter an address to search.', '#c00');
+      return;
+    }
+    showMsg('Searching...');
+    fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1`)
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.length > 0) {
+          latInput.value = data[0].lat;
+          lngInput.value = data[0].lon;
+          setMapMarker(data[0].lat, data[0].lon);
+          showMsg('Location found and coordinates filled!', 'green');
+        } else {
+          showMsg('No results found for this address.', '#c00');
+        }
+      })
+      .catch(() => showMsg('Error searching location.', '#c00'));
+  });
+
+  currentBtn.addEventListener('click', function() {
+    if (!navigator.geolocation) {
+      showMsg('Geolocation is not supported by your browser.', '#c00');
+      return;
+    }
+    showMsg('Getting your current location...');
+    navigator.geolocation.getCurrentPosition(
+      function(pos) {
+        const lat = pos.coords.latitude
+        const lng = pos.coords.longitude
+        latInput.value = lat.toFixed(6);
+        lngInput.value = lng.toFixed(6);
+        setMapMarker(lat, lng);
+        // Reverse geocode to fill human-readable area name
+        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=16&addressdetails=1`)
+          .then(res => res.json())
+          .then(data => {
+            const addr = data && data.address ? data.address : {}
+            const parts = [addr.neighbourhood, addr.suburb, addr.village, addr.town, addr.city, addr.state_district, addr.state]
+              .filter(Boolean)
+            const pretty = parts.join(', ')
+            if (pretty) locationInput.value = pretty + (pretty.toLowerCase().includes('ahmedabad') ? '' : ', Ahmedabad')
+            showMsg('Current location filled.', 'green')
+          })
+          .catch(() => showMsg('Coordinates set. Unable to resolve address name.', '#c80'))
+      },
+      function() {
+        showMsg('Unable to retrieve your location.', '#c00');
+      }
+    );
+  });
+
+  function updateMapFromFields() {
+    if (latInput.value && lngInput.value) {
+      setMapMarker(parseFloat(latInput.value), parseFloat(lngInput.value));
+    }
+  }
+  latInput.addEventListener('change', updateMapFromFields);
+  lngInput.addEventListener('change', updateMapFromFields);
+});
+</script>
+{% endblock %}

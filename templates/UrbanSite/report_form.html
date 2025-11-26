@@ -1,0 +1,329 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ title }} — UrbanVista{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+<style>
+.report-form-section {
+    padding: 40px 0;
+    background: var(--uv-c-surface-1, var(--surface, #121826));
+    min-height: 80vh;
+}
+.form-container {
+    max-width: 800px;
+    margin: 0 auto;
+    background: var(--uv-c-surface-2, var(--elev, #151c2e));
+    padding: 32px;
+    border-radius: 12px;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border, #273043);
+}
+.form-container h1 {
+    font-size: clamp(28px, 4vw, 36px);
+    margin-bottom: 8px;
+    color: var(--text, #e9edf6);
+    text-align: center;
+}
+.form-container .subtitle {
+    text-align: center;
+    color: var(--muted, #a3adc2);
+    margin-bottom: 32px;
+    font-size: 16px;
+}
+.form-group {
+    margin-bottom: 24px;
+}
+.form-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--text, #e9edf6);
+}
+.form-control {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--border, #273043);
+    background: var(--surface, #121826);
+    color: var(--text, #e9edf6);
+    font-size: 16px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    font-family: inherit;
+}
+.form-control:focus {
+    border-color: var(--primary, #0ea5e9);
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
+    outline: none;
+}
+textarea.form-control {
+    resize: vertical;
+    min-height: 100px;
+}
+select.form-control {
+    cursor: pointer;
+}
+.helptext {
+    font-size: 14px;
+    color: var(--muted, #a3adc2);
+    margin-top: 4px;
+    display: block;
+}
+.errorlist {
+    color: #ef4444;
+    list-style: none;
+    padding: 0;
+    margin-top: 8px;
+    font-size: 14px;
+}
+.errorlist li {
+    margin-bottom: 4px;
+}
+.btn-submit {
+    display: block;
+    width: 100%;
+    padding: 14px 24px;
+    border-radius: 8px;
+    background: var(--primary, #0ea5e9);
+    color: #0b1018;
+    border: none;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+    margin-top: 8px;
+}
+.btn-submit:hover {
+    background: color-mix(in srgb, var(--primary, #0ea5e9) 85%, #000 15%);
+    transform: translateY(-2px);
+}
+.ahmedabad-notice {
+    background: rgba(14, 165, 233, 0.1);
+    border: 1px solid var(--primary, #0ea5e9);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 24px;
+    color: var(--text, #e9edf6);
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.ahmedabad-notice i {
+    color: var(--primary, #0ea5e9);
+}
+.required-indicator {
+    color: #ef4444;
+    margin-left: 4px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="report-form-section">
+    <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+        <div class="form-container">
+            <h1>{{ title|default:"Report Civic Issue" }}</h1>
+            <p class="subtitle">Submit a civic issue report for Ahmedabad</p>
+
+            <div class="ahmedabad-notice">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>Reporting is currently limited to Ahmedabad pincodes (380001-380060) only.</span>
+            </div>
+
+            {% if messages %}
+                <div style="margin-bottom: 24px;">
+                    {% for message in messages %}
+                        <div style="padding: 12px 16px; border-radius: 8px; margin-bottom: 8px; 
+                                    {% if message.tags == 'error' %}background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid #ef4444;
+                                    {% else %}background: rgba(14, 165, 233, 0.1); color: var(--primary, #0ea5e9); border: 1px solid var(--primary, #0ea5e9);{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="errorlist">
+                        {% for error in form.non_field_errors %}
+                            <div>{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <!-- Reporter Information -->
+                <div class="form-group">
+                    <label for="{{ form.name.id_for_label }}" class="form-label">
+                        Full Name <span class="required-indicator">*</span>
+                    </label>
+                    {{ form.name }}
+                    {% if form.name.errors %}
+                        <ul class="errorlist">
+                            {% for error in form.name.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                    {% if form.name.help_text %}
+                        <span class="helptext">{{ form.name.help_text }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.email.id_for_label }}" class="form-label">
+                        Email Address <span class="required-indicator">*</span>
+                    </label>
+                    {{ form.email }}
+                    {% if form.email.errors %}
+                        <ul class="errorlist">
+                            {% for error in form.email.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                    {% if form.email.help_text %}
+                        <span class="helptext">{{ form.email.help_text }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.phone.id_for_label }}" class="form-label">
+                        Phone Number <span class="required-indicator">*</span>
+                    </label>
+                    {{ form.phone }}
+                    {% if form.phone.errors %}
+                        <ul class="errorlist">
+                            {% for error in form.phone.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                    {% if form.phone.help_text %}
+                        <span class="helptext">{{ form.phone.help_text }}</span>
+                    {% endif %}
+                </div>
+
+                <!-- Location Information -->
+                <div class="form-group">
+                    <label for="{{ form.area.id_for_label }}" class="form-label">
+                        Area/Ward <span class="required-indicator">*</span>
+                    </label>
+                    {{ form.area }}
+                    {% if form.area.errors %}
+                        <ul class="errorlist">
+                            {% for error in form.area.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                    {% if form.area.help_text %}
+                        <span class="helptext">{{ form.area.help_text }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.pincode.id_for_label }}" class="form-label">
+                        Pincode <span class="required-indicator">*</span>
+                    </label>
+                    {{ form.pincode }}
+                    {% if form.pincode.errors %}
+                        <ul class="errorlist">
+                            {% for error in form.pincode.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                    {% if form.pincode.help_text %}
+                        <span class="helptext">{{ form.pincode.help_text }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.address.id_for_label }}" class="form-label">
+                        Detailed Address (Optional)
+                    </label>
+                    {{ form.address }}
+                    {% if form.address.errors %}
+                        <ul class="errorlist">
+                            {% for error in form.address.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                    {% if form.address.help_text %}
+                        <span class="helptext">{{ form.address.help_text }}</span>
+                    {% endif %}
+                </div>
+
+                <!-- Issue Details -->
+                <div class="form-group">
+                    <label for="{{ form.problem_type.id_for_label }}" class="form-label">
+                        Problem Type <span class="required-indicator">*</span>
+                    </label>
+                    {{ form.problem_type }}
+                    {% if form.problem_type.errors %}
+                        <ul class="errorlist">
+                            {% for error in form.problem_type.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                    {% if form.problem_type.help_text %}
+                        <span class="helptext">{{ form.problem_type.help_text }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.description.id_for_label }}" class="form-label">
+                        Description <span class="required-indicator">*</span>
+                    </label>
+                    {{ form.description }}
+                    {% if form.description.errors %}
+                        <ul class="errorlist">
+                            {% for error in form.description.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                    {% if form.description.help_text %}
+                        <span class="helptext">{{ form.description.help_text }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.image.id_for_label }}" class="form-label">
+                        Photo (Optional)
+                    </label>
+                    {{ form.image }}
+                    {% if form.image.errors %}
+                        <ul class="errorlist">
+                            {% for error in form.image.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                    {% if form.image.help_text %}
+                        <span class="helptext">{{ form.image.help_text }}</span>
+                    {% endif %}
+                </div>
+
+                <!-- reCAPTCHA placeholder (will be integrated with actual keys) -->
+                {{ form.recaptcha_token }}
+
+                <button type="submit" class="btn-submit">
+                    <i class="fas fa-paper-plane"></i> Submit Report
+                </button>
+            </form>
+
+            <div style="margin-top: 24px; text-align: center; color: var(--muted, #a3adc2); font-size: 14px;">
+                <p>Your report will be forwarded to the appropriate municipal authority.</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+

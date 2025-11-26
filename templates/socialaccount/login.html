@@ -1,0 +1,38 @@
+{% extends "socialaccount/base.html" %}
+{% load i18n socialaccount %}
+
+{% block head_title %}
+  {% blocktrans with provider=provider.name %}Sign In via {{ provider }}{% endblocktrans %}
+{% endblock %}
+
+{% block content %}
+  <div class="card" style="max-width:520px">
+    <h2 style="margin:0 0 8px 0">
+      {% if process == "connect" %}
+        {% blocktrans with provider=provider.name %}Connect {{ provider }}{% endblocktrans %}
+      {% else %}
+        {% blocktrans with provider=provider.name %}Sign in via {{ provider }}{% endblocktrans %}
+      {% endif %}
+    </h2>
+
+    <p class="subtitle" style="margin-bottom:14px">
+      {% if process == "connect" %}
+        {% blocktrans with provider=provider.name %}You are about to link your account with {{ provider }}.{% endblocktrans %}
+      {% else %}
+        {% blocktrans with provider=provider.name %}You are about to sign in using your {{ provider }} account.{% endblocktrans %}
+      {% endif %}
+    </p>
+
+    <form method="post" action="{% provider_login_url provider.id process=process %}">
+      {% csrf_token %}
+      <button class="btn btn-google" type="submit">
+        <span class="g" aria-hidden="true"></span>
+        {% blocktrans with provider=provider.name %}Continue with {{ provider }}{% endblocktrans %}
+      </button>
+    </form>
+
+    <div class="form-actions" style="margin-top:12px">
+      <a class="btn btn-outline" href="{% url 'home' %}">{% trans "Cancel" %}</a>
+    </div>
+  </div>
+{% endblock %}

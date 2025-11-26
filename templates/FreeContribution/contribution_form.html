@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<section class="container" style="max-width:880px;padding: 20px 0 28px;">
+  <header style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+    <div>
+      <h1 style="margin:0;">{{ page_title }}</h1>
+      <p class="muted">Please provide clear details for better community help.</p>
+    </div>
+  </header>
+
+  <form method="post" enctype="multipart/form-data" class="card" style="display:grid;gap:14px;padding:16px;border:1px solid var(--border);border-radius:12px;background:var(--surface);">
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+      <div class="alert" style="padding:10px;border:1px solid var(--nav-border);border-radius:8px;background:rgba(255,0,0,.06);color:#ffbdbd;">
+        {{ form.non_field_errors }}
+      </div>
+    {% endif %}
+
+    <div class="grid-2" style="display:grid;gap:12px;grid-template-columns:1fr 1fr;">
+      <div class="field" style="grid-column:1/-1;">
+        <label>Title</label>
+        {{ form.title }}
+        {{ form.title.errors }}
+      </div>
+
+      <div class="field" style="grid-column:1/-1;">
+        <label>Description</label>
+        {{ form.description }}
+        {{ form.description.errors }}
+      </div>
+
+      <div class="field">
+        <label>Category</label>
+        {{ form.category }}
+        {{ form.category.errors }}
+      </div>
+
+      <div class="field">
+        <label>Image</label>
+        {{ form.image }}
+        {{ form.image.errors }}
+      </div>
+
+      <div class="field" style="grid-column:1/-1;">
+        <label>Location</label>
+        {{ form.location }}
+        {{ form.location.errors }}
+      </div>
+
+      <div class="field">
+        <label>Latitude</label>
+        {{ form.latitude }}
+        {{ form.latitude.errors }}
+      </div>
+      <div class="field">
+        <label>Longitude</label>
+        {{ form.longitude }}
+        {{ form.longitude.errors }}
+      </div>
+
+      <div class="field" {% if type_slug != 'event' %}style="display:none"{% endif %}>
+        <label>Event date</label>
+        {{ form.event_date }}
+        {{ form.event_date.errors }}
+      </div>
+
+      <div class="field" style="grid-column:1/-1;display:flex;gap:8px;align-items:center;">
+        {{ form.notify_authorities }} <label for="{{ form.notify_authorities.id_for_label }}">Notify authorities</label>
+        {{ form.notify_authorities.errors }}
+      </div>
+    </div>
+
+    <div style="display:flex;gap:8px;justify-content:flex-end;">
+      <a class="btn" href="{% url 'freecontribution:contribution_home' %}">Cancel</a>
+      <button class="btn btn-primary" type="submit">Submit</button>
+    </div>
+  </form>
+</section>
+{% endblock %}

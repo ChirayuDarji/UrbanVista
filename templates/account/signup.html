@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+{% load static %}
+{% load i18n account socialaccount %}
+
+{% block title %}{% trans "Sign up" %} • UrbanVista{% endblock %}
+{% block page_header %}{% endblock %}
+{% block body_class %}{% endblock %}
+{% block main_class %}container-fluid{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/signup.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="auth-outer-container">
+  <div class="auth-card">
+    <!-- Left: Signup Form -->
+    <div class="auth-card-left">
+      <div class="auth-left-inner">
+        <a class="sr-only" href="#signup-form">{% trans "Skip to signup form" %}</a>
+        <h1 class="hero-heading">
+          <span>{% trans "Create your" %}</span>
+          <span class="accent">UrbanVista</span>
+          <span>{% trans "account" %}</span>
+        </h1>
+        <p class="have-account">
+          {% trans "Already have an account?" %}
+          <a href="{% url 'account_login' %}" class="link-underline">{% trans "Sign in" %}</a>
+        </p>
+        {% with next_url=redirect_field_value|default:'/' %}
+        <form class="auth-social" method="post" action="{% provider_login_url 'google' process='signup' next=next_url %}">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-google-pill">
+            <span class="google-icon" aria-hidden="true">
+              <!-- Google SVG Icon -->
+              <svg width="18" height="18" viewBox="0 0 18 18" focusable="false" aria-hidden="true">
+                <path fill="#EA4335" d="M9 3.48c1.69 0 2.84.73 3.49 1.35l2.38-2.38C13.5.83 11.48 0 9 0 5.48 0 2.44 1.99.95 4.9l2.86 2.22C4.53 5.24 6.59 3.48 9 3.48z"/>
+                <path fill="#34A853" d="M17.64 9.2c0-.63-.06-1.25-.18-1.84H9v3.49h4.84c-.21 1.13-.84 2.09-1.8 2.73l2.77 2.15c1.62-1.49 2.56-3.68 2.56-6.03z"/>
+                <path fill="#4285F4" d="M9 18c2.43 0 4.47-.8 5.96-2.17l-2.77-2.15c-.76.51-1.73.81-3.19.81-2.45 0-4.53-1.65-5.27-3.86l-2.86 2.2C2.36 15.99 5.45 18 9 18z"/>
+                <path fill="#FBBC05" d="M3.73 10.63c-.18-.53-.28-1.07-.28-1.63 0-.56.1-1.1.28-1.63l-2.86-2.2C.3 6.07 0 7.5 0 9s.3 2.93.87 4.23l2.86-2.6z"/>
+              </svg>
+            </span>
+            <span class="google-label">{% trans "Sign up with Google" %}</span>
+          </button>
+        </form>
+        {% endwith %}
+        <div class="auth-divider"><span>{% trans "Or sign up with email" %}</span></div>
+        <form id="signup-form" class="auth-form" method="post" action="{% url 'account_signup' %}" novalidate>
+          {% csrf_token %}
+          {% if redirect_field_value %}
+            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}">
+          {% endif %}
+          {% if form.non_field_errors %}
+          <div class="alert alert-error" role="alert">
+            {% for err in form.non_field_errors %}<div>{{ err }}</div>{% endfor %}
+          </div>
+          {% endif %}
+          {% if form.username %}
+          <div class="field">
+            <label for="{{ form.username.id_for_label }}" class="label">{{ form.username.label|default:_("Username") }}</label>
+            <input
+              id="{{ form.username.id_for_label }}"
+              name="{{ form.username.html_name }}"
+              type="text"
+              class="input{% if form.username.errors %} is-invalid{% endif %}"
+              value="{{ form.username.value|default_if_none:'' }}"
+              autocomplete="username"
+              aria-invalid="{{ form.username.errors|yesno:'true,false' }}"
+              aria-describedby="{% if form.username.errors %}id_username_error{% endif %}">
+            {% if form.username.errors %}
+            <div id="id_username_error" class="error-text">
+              {% for err in form.username.errors %}{{ err }}{% if not forloop.last %}<br>{% endif %}{% endfor %}
+            </div>
+            {% endif %}
+          </div>
+          {% endif %}
+          {% if form.email %}
+          <div class="field">
+            <label for="{{ form.email.id_for_label }}" class="label">{{ form.email.label|default:_("Email") }}</label>
+            <input
+              id="{{ form.email.id_for_label }}"
+              name="{{ form.email.html_name }}"
+              type="email"
+              class="input{% if form.email.errors %} is-invalid{% endif %}"
+              value="{{ form.email.value|default_if_none:'' }}"
+              autocomplete="email"
+              required
+              aria-invalid="{{ form.email.errors|yesno:'true,false' }}"
+              aria-describedby="{% if form.email.errors %}id_email_error{% endif %}">
+            {% if form.email.errors %}
+            <div id="id_email_error" class="error-text">
+              {% for err in form.email.errors %}{{ err }}{% if not forloop.last %}<br>{% endif %}{% endfor %}
+            </div>
+            {% endif %}
+          </div>
+          {% endif %}
+          {% if form.password1 %}
+          <div class="field">
+            <label for="{{ form.password1.id_for_label }}" class="label">{{ form.password1.label|default:_("Password") }}</label>
+            <div class="input-pass">
+              <input
+                id="{{ form.password1.id_for_label }}"
+                name="{{ form.password1.html_name }}"
+                type="password"
+                class="input{% if form.password1.errors %} is-invalid{% endif %}"
+                autocomplete="new-password"
+                required
+                aria-invalid="{{ form.password1.errors|yesno:'true,false' }}"
+                aria-describedby="{% if form.password1.errors %}id_password1_error{% endif %}">
+              <button type="button" class="pass-toggle" aria-label="{% trans 'Show password' %}">👁️</button>
+            </div>
+            {% if form.password1.errors %}
+            <div id="id_password1_error" class="error-text">
+              {% for err in form.password1.errors %}{{ err }}{% if not forloop.last %}<br>{% endif %}{% endfor %}
+            </div>
+            {% endif %}
+          </div>
+          {% endif %}
+          {% if form.password2 %}
+          <div class="field">
+            <label for="{{ form.password2.id_for_label }}" class="label">{{ form.password2.label|default:_("Confirm password") }}</label>
+            <div class="input-pass">
+              <input
+                id="{{ form.password2.id_for_label }}"
+                name="{{ form.password2.html_name }}"
+                type="password"
+                class="input{% if form.password2.errors %} is-invalid{% endif %}"
+                autocomplete="new-password"
+                required
+                aria-invalid="{{ form.password2.errors|yesno:'true,false' }}"
+                aria-describedby="{% if form.password2.errors %}id_password2_error{% endif %}">
+              <button type="button" class="pass-toggle" aria-label="{% trans 'Show password' %}">👁️</button>
+            </div>
+            {% if form.password2.errors %}
+            <div id="id_password2_error" class="error-text">
+              {% for err in form.password2.errors %}{{ err }}{% if not forloop.last %}<br>{% endif %}{% endfor %}
+            </div>
+            {% endif %}
+          </div>
+          {% endif %}
+          <div class="form-actions">
+            <button class="btn btn-primary btn-lg w-100" type="submit">
+              {% trans "Create account" %}
+            </button>
+          </div>
+        </form>
+        <p class="tiny muted terms" style="margin-top:10px">
+          {% trans "By creating an account, you agree to our" %} <a href="#" class="link-underline">{% trans "Terms" %}</a> {% trans "and" %}
+          <a href="#" class="link-underline">{% trans "Privacy Policy" %}</a>.
+        </p>
+      </div>
+    </div>
+    <!-- Right: Video -->
+    <div class="auth-card-right">
+      <video
+        class="auth-video"
+        src="{% static 'images/login_hero2.mp4' %}"
+        autoplay
+        muted
+        loop
+        playsinline
+        poster="{% static 'images/video-poster.jpg' %}">
+        Your browser does not support the video tag.
+      </video>
+    </div>
+  </div>
+</div>
+{% endblock %}
