@@ -215,3 +215,51 @@ INFO 2025-11-26 19:24:38,836 basehttp "GET /help/ HTTP/1.1" 200 27778
 INFO 2025-11-26 19:24:40,457 basehttp "GET /about/ HTTP/1.1" 200 56444
 INFO 2025-11-26 19:26:37,032 basehttp "GET /static/images/newviedo.mp4 HTTP/1.1" 200 31284505
 INFO 2025-11-26 19:26:59,981 basehttp - Broken pipe from ('127.0.0.1', 50449)
+INFO 2025-11-26 20:18:51,162 autoreload Watching for file changes with StatReloader
+INFO 2025-11-26 20:18:54,468 basehttp "GET / HTTP/1.1" 200 49944
+INFO 2025-11-26 20:18:55,131 basehttp "GET /static/images/newviedo.mp4 HTTP/1.1" 200 31284505
+INFO 2025-11-26 20:18:55,851 basehttp "GET /static/images/newviedo.mp4 HTTP/1.1" 200 31284505
+INFO 2025-11-26 20:18:56,044 basehttp "GET /accounts/signup/ HTTP/1.1" 200 22381
+INFO 2025-11-26 20:18:56,168 basehttp "GET /static/css/signup.css HTTP/1.1" 200 5497
+WARNING 2025-11-26 20:18:56,270 basehttp "GET /static/images/video-poster.jpg HTTP/1.1" 404 1996
+INFO 2025-11-26 20:18:56,371 basehttp "GET /static/images/login_hero2.mp4 HTTP/1.1" 200 4715099
+INFO 2025-11-26 20:18:57,835 basehttp "POST /accounts/google/login/?process=signup&next=%2F HTTP/1.1" 302 0
+INFO 2025-11-27 10:16:55,732 autoreload Watching for file changes with StatReloader
+INFO 2025-11-27 10:16:58,495 basehttp "GET / HTTP/1.1" 200 49944
+INFO 2025-11-27 10:16:58,713 basehttp "GET /static/css/nav.css HTTP/1.1" 200 9029
+INFO 2025-11-27 10:16:58,713 basehttp "GET /static/css/app.css HTTP/1.1" 200 27208
+INFO 2025-11-27 10:16:58,769 basehttp "GET /static/css/home-improvements.css HTTP/1.1" 200 26356
+INFO 2025-11-27 10:16:58,781 basehttp "GET /static/css/animation.css HTTP/1.1" 200 13737
+INFO 2025-11-27 10:16:58,813 basehttp "GET /static/js/ajax-helper.js HTTP/1.1" 200 5181
+INFO 2025-11-27 10:16:58,815 basehttp "GET /static/js/app.js HTTP/1.1" 200 12980
+INFO 2025-11-27 10:16:58,817 basehttp "GET /static/js/tooltips.js HTTP/1.1" 200 4430
+INFO 2025-11-27 10:16:58,836 basehttp "GET /static/images/logo.png HTTP/1.1" 200 100200
+INFO 2025-11-27 10:16:58,895 basehttp "GET /static/js/pagination.js HTTP/1.1" 200 3097
+INFO 2025-11-27 10:16:58,896 basehttp "GET /static/js/home.js HTTP/1.1" 200 31214
+INFO 2025-11-27 10:16:58,915 basehttp "GET /static/js/keyboard-shortcuts.js HTTP/1.1" 200 3002
+INFO 2025-11-27 10:16:58,934 basehttp "GET /static/css/home.css HTTP/1.1" 200 27376
+INFO 2025-11-27 10:16:59,290 basehttp "GET /static/images/image4.png HTTP/1.1" 200 1180440
+INFO 2025-11-27 10:16:59,463 basehttp "GET /static/images/image2.png HTTP/1.1" 200 1365467
+INFO 2025-11-27 10:16:59,497 basehttp "GET /static/images/image3.png HTTP/1.1" 200 1354310
+INFO 2025-11-27 10:17:00,689 basehttp "GET /static/images/newviedo.mp4 HTTP/1.1" 200 31284505
+INFO 2025-11-27 10:17:01,553 basehttp "GET /static/site.webmanifest HTTP/1.1" 200 366
+INFO 2025-11-27 10:17:01,677 basehttp "GET /static/images/newviedo.mp4 HTTP/1.1" 200 31284505
+INFO 2025-11-27 10:17:01,725 basehttp "GET /static/img/favicon.svg HTTP/1.1" 200 257
+INFO 2025-11-27 10:17:01,926 basehttp "GET /accounts/signup/ HTTP/1.1" 200 22381
+INFO 2025-11-27 10:17:02,040 basehttp "GET /static/css/signup.css HTTP/1.1" 200 5497
+WARNING 2025-11-27 10:17:02,203 basehttp "GET /static/images/video-poster.jpg HTTP/1.1" 404 1996
+INFO 2025-11-27 10:17:02,276 basehttp "GET /static/images/login_hero2.mp4 HTTP/1.1" 200 4715099
+INFO 2025-11-27 10:17:03,386 basehttp "POST /accounts/google/login/?process=signup&next=%2F HTTP/1.1" 302 0
+INFO 2025-11-27 10:17:13,294 basehttp "GET /accounts/google/login/callback/?state=PSuwDbd530PtCLDO&code=4%2F0Ab32j919_Y-fLBDn3Nji5gmIpZtZK-2FLXV8SRjnHDR_NuenNyBHsAR0KhodejP7u19w_Q&scope=email+profile+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email+openid&authuser=0&prompt=none HTTP/1.1" 302 0
+INFO 2025-11-27 10:17:13,312 basehttp "GET / HTTP/1.1" 200 53856
+INFO 2025-11-27 10:17:13,877 basehttp - Broken pipe from ('127.0.0.1', 50071)
+INFO 2025-11-27 10:17:14,402 basehttp "GET /static/images/newviedo.mp4 HTTP/1.1" 200 31284505
+INFO 2025-11-27 10:17:14,875 basehttp "GET /static/images/newviedo.mp4 HTTP/1.1" 200 31284505
+INFO 2025-11-27 10:17:21,204 basehttp "GET / HTTP/1.1" 200 53418
+INFO 2025-11-27 10:17:21,367 basehttp - Broken pipe from ('127.0.0.1', 50076)
+INFO 2025-11-27 10:17:21,825 basehttp "GET /static/images/newviedo.mp4 HTTP/1.1" 200 31284505
+INFO 2025-11-27 10:17:22,416 basehttp "GET /static/images/newviedo.mp4 HTTP/1.1" 200 31284505
+INFO 2025-11-27 10:17:28,600 basehttp "POST /accounts/logout/ HTTP/1.1" 302 0
+INFO 2025-11-27 10:17:28,626 basehttp "GET / HTTP/1.1" 200 50368
+INFO 2025-11-27 10:17:29,675 basehttp "GET /static/images/newviedo.mp4 HTTP/1.1" 200 31284505
+INFO 2025-11-27 10:17:30,094 basehttp "GET /static/images/newviedo.mp4 HTTP/1.1" 200 31284505
